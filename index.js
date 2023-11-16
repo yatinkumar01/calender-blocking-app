@@ -40,8 +40,6 @@ const authUrl = oAuth2Client.generateAuthUrl({
 });
 
 
-
-
 // Assuming your oAuth2Client is already configured
 
 // Function to create a new event
@@ -49,15 +47,18 @@ async function createEvent(auth) {
   const event = {
     summary: 'Sample Event',
     description: 'This is a sample event created by the Google Calendar Blocking App.',
+    organizer: {
+      email: 'askd442@gmail.com.com', // Ensure this matches the authenticated user's email
+    },
     start: {
-      dateTime: '2023-11-15T10:00:00', // Replace with your desired start time
+      dateTime: '2023-11-19T10:00:00', // Replace with your desired start time
       timeZone: 'Asia/Kolkata', // Replace with your time zone
     },
     end: {
-      dateTime: '2023-11-15T11:00:00', // Replace with your desired end time
+      dateTime: '2023-11-19T11:00:00', // Replace with your desired end time
       timeZone: 'Asia/Kolkata', // Replace with your time zone
     },
-    'attendees': [
+    attendees: [
       {'email': 'ashishraa189@gmail.com'},
       {'email': 'ashishgupta@masaischool.com'},
       {'email': 'bestinshifting@gmail.com'}
@@ -72,6 +73,7 @@ async function createEvent(auth) {
     });
 
     console.log('Event created:', response.data);
+    
   } catch (error) {
     console.error('Error creating event:', error.message);
   }
@@ -102,6 +104,22 @@ async function listEvents(auth, userEmail) {
   }
 }
 
+// Function to update an existing event
+async function updateEvent(auth, eventId, updatedEvent) {
+  try {
+    const response = await calendar.events.update({
+      auth,
+      calendarId: 'primary',
+      eventId,
+      resource: updatedEvent,
+    });
+
+    console.log('Event updated:', response.data);
+  } catch (error) {
+    console.error('Error updating event:', error.message);
+  }
+}
+
 
 // Assuming your app's route for scheduling an event
 app.get('/schedule-event', async (req, res) => {
@@ -118,6 +136,9 @@ app.get('/schedule-event', async (req, res) => {
     await createEvent(oAuth2Client);
 
     res.send('Event scheduled successfully!');
+
+
+    //res.redirect('/update-event/meq24m7g7m3td61eqgtvjt1hls')
   } catch (error) {
     console.error('Error scheduling event:', error.message);
     res.status(500).send('Internal Server Error');
@@ -142,7 +163,6 @@ app.get('/list-events/:email', async (req, res) => {
 
     // Call the function to list events for the specified email
     await listEvents(oAuth2Client, userEmail);
-    console.log(listEvents)
     res.send(`Events listed successfully for ${userEmail}!`);
   } catch (error) {
     console.error('Error listing events:', error.message);
@@ -175,26 +195,59 @@ app.get('/oauth2callback', async (req, res) => {
     // Log the obtained tokens
     console.log('Obtained tokens:', tokens);
 
+    //
     // Store the tokens in the session
     req.session.tokens = tokens;
 
+
+    res.send("login success")
     // Redirect to the main page or any other route you want
-    res.redirect('/schedule-event')
+    //res.redirect('/list-events/askd442@gmail.com')
   } catch (error) {
     console.error('Error exchanging code for tokens:', error.message);
     res.status(500).send('Internal Server Error');
   }
 });
  
-app.get('/login', (req, res) => {
-try {
-  console.log("loginsuccessfully ")
-  res.status(200).send('Login SUccessfull');
-} catch (error) {
-      console.error('Error exchanging code for tokens:', error.message);
+
+// Assuming your app's route for updating an event
+app.get('/update-event/:eventId', async (req, res) => {
+  try {
+    // Check if tokens are available in the session
+    if (!req.session.tokens) {
+      throw new Error('User not authenticated. Please log in first.');
+    }
+
+    // Set tokens from the session
+    oAuth2Client.setCredentials(req.session.tokens);
+
+    const eventId = req.params.eventId;
+    if (!eventId) {
+      throw new Error('Event ID parameter is missing.');
+    }
+
+    // Example: Update the event start time
+    const updatedEvent = {
+      start: {
+        dateTime: '2023-11-20T11:00:00',
+        timeZone: 'Asia/Kolkata',
+      },
+      end: {
+        dateTime: '2023-11-20T12:00:00',
+        timeZone: 'Asia/Kolkata',
+      }
+    };
+
+    // Call the function to update the event
+    await updateEvent(oAuth2Client, eventId, updatedEvent);
+
+    res.send(`Event updated successfully with ID: ${eventId}!`);
+  } catch (error) {
+    console.error('Error updating event:', error.message);
     res.status(500).send('Internal Server Error');
-}
+  }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
