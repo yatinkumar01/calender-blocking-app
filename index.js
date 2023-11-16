@@ -4,6 +4,7 @@ const { google } = require('googleapis');
 const calendar = google.calendar('v3');
 const opn = require('opn');
 const session = require('express-session');
+const uuid =require('uuid').v4;
 
 const app = express();
 
@@ -58,7 +59,13 @@ async function createEvent(auth) {
       dateTime: '2023-11-19T11:00:00', // Replace with your desired end time
       timeZone: 'Asia/Kolkata', // Replace with your time zone
     },
+    conferenceData:{
+      createRequest: {
+          requestId: uuid()
+      }
+    },
     attendees: [
+      {'email' : 'askd442@gmail.com'},
       {'email': 'ashishraa189@gmail.com'},
       {'email': 'ashishgupta@masaischool.com'},
       {'email': 'bestinshifting@gmail.com'}
@@ -69,6 +76,7 @@ async function createEvent(auth) {
     const response = await calendar.events.insert({
       auth,
       calendarId: 'primary', // Use 'primary' for the user's primary calendar
+      conferenceDataVersion:1,
       resource: event,
     });
 
@@ -120,6 +128,20 @@ async function updateEvent(auth, eventId, updatedEvent) {
   }
 }
 
+// Function to delete an existing event
+async function deleteEvent(auth, eventId) {
+  try {
+    await calendar.events.delete({
+      auth,
+      calendarId: 'primary',
+      eventId,
+    });
+
+    console.log('Event deleted successfully:', eventId);
+  } catch (error) {
+    console.error('Error deleting event:', error.message);
+  }
+}
 
 // Assuming your app's route for scheduling an event
 app.get('/schedule-event', async (req, res) => {
@@ -248,6 +270,31 @@ app.get('/update-event/:eventId', async (req, res) => {
   }
 });
 
+// Assuming your app's route for deleting an event
+app.get('/delete-event/:eventId', async (req, res) => {
+  try {
+    // Check if tokens are available in the session
+    if (!req.session.tokens) {
+      throw new Error('User not authenticated. Please log in first.');
+    }
+
+    // Set tokens from the session
+    oAuth2Client.setCredentials(req.session.tokens);
+
+    const eventId = req.params.eventId;
+    if (!eventId) {
+      throw new Error('Event ID parameter is missing.');
+    }
+
+    // Call the function to delete the event
+    await deleteEvent(oAuth2Client, eventId);
+
+    res.send(`Event deleted successfully with ID: ${eventId}!`);
+  } catch (error) {
+    console.error('Error deleting event:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Start the server
 app.listen(PORT, () => {
