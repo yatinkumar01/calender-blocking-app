@@ -4,14 +4,14 @@ Brief project description goes here.
 
 ## Installation
 
-### To install the project dependencies, use the following commands:
+## To install the project dependencies, use the following commands:
 
 ```bash
 npm i -g pnpm
 pnpm install express googleapis express-session openurl opn uuid dotenv body-parser dayjs cors
 ```
 
-### Create a file named .env in the root of your project and add the following details:
+ Create a file named .env in the root of your project and add the following details:
 
 ```
 API_KEY = 'Your-Api-Key'
