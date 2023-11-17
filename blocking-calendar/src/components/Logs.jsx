@@ -1,5 +1,5 @@
-import { Box, Heading } from '@chakra-ui/react';
-import React from 'react';
+import { Box, Heading } from "@chakra-ui/react";
+import React from "react";
 
 const Logs = () => {
   return (
