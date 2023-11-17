@@ -10,13 +10,13 @@ import EventApp from './components/AddEvent';
 import Dashboard2 from './components/Dashboard2';
 
 function App() {
-  const [activeComponent, setActiveComponent] = useState('dashboard');
+  const [activeComponent, setActiveComponent] = useState("dashboard");
 
   const renderComponent = () => {
     switch (activeComponent) {
-      case 'form':
+      case "form":
         return <Form />;
-      case 'log':
+      case "log":
         return <Logs />;
       default:
         return <Dashboard />;
@@ -24,16 +24,26 @@ function App() {
   };
   return (
     <Box className="App">
-      <Box className='navbar'>
-        <Button colorScheme='purple' leftIcon={<PiPlusBold/>} onClick={() => setActiveComponent('form')}>Create event</Button>
-        <Button colorScheme='purple' onClick={() => setActiveComponent('dashboard')}>Dashboard</Button>
-        <Button colorScheme='purple' onClick={() => setActiveComponent('log')}>Logs</Button>
+      <Box className="navbar">
+        <Button
+          colorScheme="purple"
+          leftIcon={<PiPlusBold />}
+          onClick={() => setActiveComponent("form")}
+        >
+          Create event
+        </Button>
+        <Button
+          colorScheme="purple"
+          onClick={() => setActiveComponent("dashboard")}
+        >
+          Dashboard
+        </Button>
+        <Button colorScheme="purple" onClick={() => setActiveComponent("log")}>
+          Logs
+        </Button>
       </Box>
-      <Box className='body-box'>
-        {renderComponent()}
-      </Box>
+      <Box className="body-box">{renderComponent()}</Box>
       {/* <EventApp/> */}
-
     </Box>
   );
 }
