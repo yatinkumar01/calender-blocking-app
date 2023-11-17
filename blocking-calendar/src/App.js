@@ -7,6 +7,7 @@ import { Box, Button } from '@chakra-ui/react';
 import {PiPlusBold} from 'react-icons/pi'
 import EventScheduler from './components/AddEvent';
 import EventApp from './components/AddEvent';
+import Dashboard2 from './components/Dashboard2';
 
 function App() {
   const [activeComponent, setActiveComponent] = useState('dashboard');

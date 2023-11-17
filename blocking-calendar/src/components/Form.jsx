@@ -35,13 +35,17 @@ const Form = () => {
         try {
             const startDateTimeISO = new Date(formData.startDateTime).toISOString();
           const endDateTimeISO = new Date(formData.endDateTime).toISOString();
-    
+          const linesArray = formData.attendees.split('\n');
+          const arrayOfObjects = linesArray.map(line => {
+            const [email, content] = line.split(': '); // Split each line into email and content
+            return { email, input: content }; // Create an object with email and input properties
+          });
           const response = await axios.post('http://localhost:8080/schedule_event', {
             summary: formData.summary,
             description: formData.description,
             startDateTime: startDateTimeISO,
             endDateTime: endDateTimeISO,
-            attendees: formData.attendees,
+            attendees: arrayOfObjects,
           });
           console.log(response.data); // Log the response from the backend
           alert("Event created successfully")
@@ -60,6 +64,7 @@ const Form = () => {
         boxShadow={"rgba(0, 0, 0, 0.24) 0px 3px 8px;"}
         padding={"50px"}
         bg={"white"}
+        mb={"20px"}
         mt={8}
       >
         <Heading size='lg'>Event Form</Heading>
@@ -98,23 +103,24 @@ const Form = () => {
         <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
           <GridItem>
             <FormControl>
-              <FormLabel>Location</FormLabel>
+              <FormLabel>Location or Zoom link</FormLabel>
               <Input focusBorderColor="purple.500" placeholder="Enter location" />
             </FormControl>
           </GridItem>
 
           <GridItem>
-            <FormControl>
+            {/* <FormControl>
               <FormLabel>Meeting Link</FormLabel>
               <Input focusBorderColor="purple.500" placeholder="Enter meeting link" />
-            </FormControl>
+            </FormControl> */}
+            <FormControl>
+          <FormLabel>Attendees</FormLabel>
+          <Textarea focusBorderColor="purple.500" resize='none' placeholder="Enter attendees" type="text" name="attendees" value={formData.attendees} onChange={handleInputChange} />
+        </FormControl>
           </GridItem>
         </Grid>
 
-        <FormControl mt={4}>
-          <FormLabel>Attendees</FormLabel>
-          <Input focusBorderColor="purple.500" placeholder="Enter attendees" type="text" name="attendees" value={formData.attendees} onChange={handleInputChange} />
-        </FormControl>
+        
 
         <Button type="button" onClick={handleCreateEvent} colorScheme='purple' mt={4} >
           Create Event
