@@ -13,6 +13,15 @@ import {
 } from "@chakra-ui/react";
 
 const Form = () => {
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (`0${now.getMonth() + 1}`).slice(-2);
+    const day = (`0${now.getDate()}`).slice(-2);
+    const hours = (`0${now.getHours()}`).slice(-2);
+    const minutes = (`0${now.getMinutes()}`).slice(-2);
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
   const [formData, setFormData] = useState({
     summary: "",
     description: "",
@@ -23,13 +32,33 @@ const Form = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name === 'startDateTime' && new Date(value) > new Date(formData.endDateTime)) {
+      setFormData({
+        ...formData,
+        endDateTime: value,
+        [name]: value,
+      });
+    } else if (name === 'endDateTime' && new Date(value) < new Date(formData.startDateTime)) {
+      // Ensure endDateTime is not smaller than startDateTime
+      setFormData({
+        ...formData,
+        startDateTime: value,
+        [name]: value,
+      });
+    } else if (name === 'startDateTime') {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
-  const handleCreateEvent = async () => {
+  const handleCreateEvent = async () => { 
     try {
       const startDateTimeISO = new Date(formData.startDateTime).toISOString();
       const endDateTimeISO = new Date(formData.endDateTime).toISOString();
@@ -100,6 +129,7 @@ const Form = () => {
                 focusBorderColor="purple.500"
                 type="datetime-local"
                 name="startDateTime"
+                min={getCurrentDateTime()}
                 value={formData.startDateTime}
                 onChange={handleInputChange}
               />
@@ -113,6 +143,7 @@ const Form = () => {
                 focusBorderColor="purple.500"
                 type="datetime-local"
                 name="endDateTime"
+                min = {getCurrentDateTime()}
                 value={formData.endDateTime}
                 onChange={handleInputChange}
               />
@@ -144,7 +175,7 @@ const Form = () => {
 
         <FormControl mt={4}>
           <FormLabel>Attendees</FormLabel>
-          <Input
+          <Textarea
             focusBorderColor="purple.500"
             placeholder="Enter attendees"
             type="text"

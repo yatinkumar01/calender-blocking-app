@@ -70,6 +70,7 @@ async function createEvent(auth) {
       {'email': 'ashishgupta@masaischool.com'},
       {'email': 'bestinshifting@gmail.com'}
     ],
+    sendUpdates: 'all',
   };
 
   try {
