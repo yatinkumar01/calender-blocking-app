@@ -13,6 +13,15 @@ import {
 } from "@chakra-ui/react";
 
 const Form = () => {
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (`0${now.getMonth() + 1}`).slice(-2);
+    const day = (`0${now.getDate()}`).slice(-2);
+    const hours = (`0${now.getHours()}`).slice(-2);
+    const minutes = (`0${now.getMinutes()}`).slice(-2);
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
   const [formData, setFormData] = useState({
     summary: "",
     description: "",
@@ -67,8 +76,6 @@ const Form = () => {
       });
     }
   };
-
-
   const handleCreateEvent = async () => {
     try {
       const startDateTimeISO = new Date(formData.startDateTime).toISOString();
@@ -175,6 +182,7 @@ const Form = () => {
                 focusBorderColor="purple.500"
                 type="datetime-local"
                 name="endDateTime"
+                min = {getCurrentDateTime()}
                 value={formData.endDateTime}
                 min={formData.startDateTime}
                 onChange={handleInputChange}
@@ -203,8 +211,18 @@ const Form = () => {
           </GridItem>
         </Grid>
 
-        
 
+        <FormControl mt={4}>
+          <FormLabel>Attendees</FormLabel>
+          <Textarea
+            focusBorderColor="purple.500"
+            placeholder="Enter attendees"
+            type="text"
+            name="attendees"
+            value={formData.attendees}
+            onChange={handleInputChange}
+          />
+        </FormControl>
         <Button
           type="button"
           onClick={handleCreateEvent}
