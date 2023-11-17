@@ -18,16 +18,56 @@ const Form = () => {
     description: "",
     startDateTime: "",
     endDateTime: "",
+    location:"",
     attendees: [],
   });
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   const selectedDateTime = new Date(value).getTime();
+  //   const currentDateTime = new Date().getTime();
+
+  //   if (selectedDateTime < currentDateTime) {
+  //     setFormData({
+  //       ...formData,
+  //       [name]: getCurrentDateTime(),
+  //     });
+  //   } else {
+  //     setFormData({
+  //       ...formData,
+  //       [name]: value,
+  //     });
+  //   }
+  // };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name === 'startDateTime' && new Date(value) > new Date(formData.endDateTime)) {
+      setFormData({
+        ...formData,
+        endDateTime: value,
+        [name]: value,
+      });
+    } else if (name === 'endDateTime' && new Date(value) < new Date(formData.startDateTime)) {
+      // Ensure endDateTime is not smaller than startDateTime
+      setFormData({
+        ...formData,
+        startDateTime: value,
+        [name]: value,
+      });
+    } else if (name === 'startDateTime') {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
+
 
   const handleCreateEvent = async () => {
     try {
@@ -45,6 +85,7 @@ const Form = () => {
         description: formData.description,
         startDateTime: startDateTimeISO,
         endDateTime: endDateTimeISO,
+        location: formData.location,
         attendees: arrayOfObjects,
       });
 
@@ -55,6 +96,20 @@ const Form = () => {
       alert("Error creating event");
     }
   };
+
+
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${(now.getMonth() + 1)}`.padStart(2, '0'); // Month is 0-indexed
+    const day = `${now.getDate()}`.padStart(2, '0');
+    const hours = `${now.getHours()}`.padStart(2, '0');
+    const minutes = `${now.getMinutes()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
 
   return (
     <Box>
@@ -92,6 +147,7 @@ const Form = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
+                resize='none'
               />
             </FormControl>
           </GridItem>
@@ -105,6 +161,7 @@ const Form = () => {
                 focusBorderColor="purple.500"
                 type="datetime-local"
                 name="startDateTime"
+                min={getCurrentDateTime()}
                 value={formData.startDateTime}
                 onChange={handleInputChange}
               />
@@ -119,6 +176,7 @@ const Form = () => {
                 type="datetime-local"
                 name="endDateTime"
                 value={formData.endDateTime}
+                min={formData.startDateTime}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -129,7 +187,7 @@ const Form = () => {
           <GridItem>
             <FormControl>
               <FormLabel>Location or Zoom link</FormLabel>
-              <Input focusBorderColor="purple.500" placeholder="Enter location" />
+              <Input focusBorderColor="purple.500" type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="Enter location" />
             </FormControl>
           </GridItem>
 

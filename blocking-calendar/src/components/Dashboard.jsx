@@ -1,6 +1,6 @@
 import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import logo from "../google-meet.svg";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
 import {
@@ -11,20 +11,37 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure
-} from '@chakra-ui/react'
+  useDisclosure,
+  Grid,
+  GridItem,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+
+} from "@chakra-ui/react";
+
 import { MdArrowRight, MdArrowDropDown } from "react-icons/md";
 import Dropdown from "./Dropdown";
+import Form from "./Form";
 
 const Dashboard = () => {
   const [events, setEvents] = useState([]);
+  const [formData, setFormData] = useState({
+    summary: "",
+    description: "",
+    startDateTime: "",
+    endDateTime: "",
+    location:"",
+    attendees: [],
+  });
   const [dropdownStates, setDropdownStates] = useState(
     Array(events.length).fill(false)
   );
   const [iconStates, setIconStates] = useState(Array(events.length).fill(true));
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const finalRef = React.useRef(null)
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const finalRef = React.useRef(null);
 
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
@@ -55,6 +72,47 @@ const Dashboard = () => {
     setDropdownStates(updatedStates);
     setIconStates(updatedIconStates);
   };
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'startDateTime' && new Date(value) > new Date(formData.endDateTime)) {
+      setFormData({
+        ...formData,
+        endDateTime: value,
+        [name]: value,
+      });
+    } else if (name === 'endDateTime' && new Date(value) < new Date(formData.startDateTime)) {
+      // Ensure endDateTime is not smaller than startDateTime
+      setFormData({
+        ...formData,
+        startDateTime: value,
+        [name]: value,
+      });
+    } else if (name === 'startDateTime') {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${(now.getMonth() + 1)}`.padStart(2, '0'); // Month is 0-indexed
+    const day = `${now.getDate()}`.padStart(2, '0');
+    const hours = `${now.getHours()}`.padStart(2, '0');
+    const minutes = `${now.getMinutes()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
 
   const TimeDisplay = ({ time }) => {
     const parsedDate = new Date(time);
@@ -88,22 +146,28 @@ const Dashboard = () => {
     );
   };
 
-
   const handleEditClick = (eventID) => {
     openEditModal();
   };
-  const handleEditSubmission = (eventID)=>{
+  const handleEditSubmission = (eventID) => {};
 
-  }
+  const handleDeleteEvent = (event_ID) => {
+    fetch(`http://localhost:8080/delete-event/${event_ID}`)
+      .then((response) => {
+        console.log("deletedddddd");
+        alert(`${event_ID} Deleted successfully`);
+      })
+      .catch((error) => {
+        console.log("error indelete");
+        alert(`${event_ID} not deleted`);
+      });
+  };
 
   return (
     <Box className="dashboard-container">
       <Box className="grid-container">
         {events.map((item, index) => (
-          <Box
-            key={item.event_ID}
-            className="grid-item"
-          >
+          <Box key={item.event_ID} className="grid-item">
             <Box>
               <Heading size="md">{item.summary}</Heading>
               <Box className="linkbox">
@@ -135,7 +199,7 @@ const Dashboard = () => {
                   <DateDisplay date={item.start} />
                 </Text>
                 <Text fontSize="sm" fontWeight={"100"} color="gray">
-                  Mumbai, India
+                  {item.location}
                 </Text>
               </Box>
               <br />
@@ -162,24 +226,137 @@ const Dashboard = () => {
               <br />
 
               <Box className="timebox">
-                <Button className="fontbtn" colorScheme="purple" onClick={() => handleEditClick(item.event_ID)}>
+                <Button
+                  className="fontbtn"
+                  colorScheme="purple"
+                  onClick={() => handleEditClick(item.event_ID)}
+                >
                   Edit
                 </Button>
-                <Modal finalFocusRef={finalRef} isOpen={editModalIsOpen} onClose={closeEditModal}>
+                <Modal
+                  finalFocusRef={finalRef}
+                  isOpen={editModalIsOpen}
+                  onClose={closeEditModal}
+                  size={"xl"}
+                >
                   <ModalOverlay />
                   <ModalContent>
                     <ModalHeader>Edit Event</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      {/* Add your edit form or content here */}
-                      <Text>Edit your event details here</Text>
+                      <Box
+                        maxW="xl"
+                        mx="auto"
+                        boxShadow={"rgba(0, 0, 0, 0.24) 0px 3px 8px;"}
+                        padding={"50px"}
+                        bg={"white"}
+                      >
+
+                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                          <GridItem>
+                            <FormControl>
+                              <FormLabel>Title</FormLabel>
+                              <Input
+                                focusBorderColor="purple.500"
+                                type="text"
+                                name="summary"
+                                value={formData.summary}
+                                onChange={handleInputChange}
+                              />
+                            </FormControl>
+                          </GridItem>
+
+                          <GridItem>
+                          <FormControl>
+                              <FormLabel>Location or Zoom link</FormLabel>
+                              <Input
+                                focusBorderColor="purple.500"
+                                type="text"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleInputChange}
+                                placeholder="Enter location"
+                              />
+                            </FormControl>
+                            
+                          </GridItem>
+                        </Grid>
+
+                        <Grid templateColumns="repeat(2, 48%)" gap={4}>
+                          <GridItem>
+                            <FormControl>
+                              <FormLabel>Start Time</FormLabel>
+                              <Input
+                                
+                                focusBorderColor="purple.500"
+                                type="datetime-local"
+                                name="startDateTime"
+                                min={getCurrentDateTime()}
+                                value={formData.startDateTime}
+                                onChange={handleInputChange}
+                              />
+                            </FormControl>
+                          </GridItem>
+
+                          <GridItem>
+                            <FormControl>
+                              <FormLabel>End Time</FormLabel>
+                              <Input
+                                focusBorderColor="purple.500"
+                                type="datetime-local"
+                                name="endDateTime"
+                                value={formData.endDateTime}
+                                min={formData.startDateTime}
+                                onChange={handleInputChange}
+                              />
+                            </FormControl>
+                          </GridItem>
+                        </Grid>
+
+                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                          <GridItem>
+                          <FormControl>
+                              <FormLabel>Description</FormLabel>
+                              <Textarea
+                                focusBorderColor="purple.500"
+                                placeholder="Enter description"
+                                type="text"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                                resize="none"
+                              />
+                            </FormControl>
+                            
+                          </GridItem>
+
+                          <GridItem>
+                            
+                            <FormControl>
+                              <FormLabel>Attendees</FormLabel>
+                              <Textarea
+                                focusBorderColor="purple.500"
+                                resize="none"
+                                placeholder="Enter attendees"
+                                type="text"
+                                name="attendees"
+                                value={formData.attendees}
+                                onChange={handleInputChange}
+                              />
+                            </FormControl>
+                          </GridItem>
+                        </Grid>
+                      </Box>
                     </ModalBody>
 
                     <ModalFooter>
                       <Button variant="ghost" mr={3} onClick={closeEditModal}>
                         Cancel
                       </Button>
-                      <Button colorScheme="blue" onClick={handleEditSubmission(item.event_ID)}>
+                      <Button
+                        colorScheme="purple"
+                        onClick={handleEditSubmission(item.event_ID)}
+                      >
                         Save Changes
                       </Button>
                     </ModalFooter>
@@ -202,10 +379,17 @@ const Dashboard = () => {
                     </ModalBody>
 
                     <ModalFooter>
-                      <Button variant='ghost' mr={3} onClick={onClose}>
+                      <Button variant="ghost" mr={3} onClick={onClose}>
                         Cancel
                       </Button>
-                      <Button colorScheme="red">Delete</Button>
+                      <Button
+                        onClick={() => {
+                          handleDeleteEvent(item.eventId);
+                        }}
+                        colorScheme="red"
+                      >
+                        Delete
+                      </Button>
                     </ModalFooter>
                   </ModalContent>
                 </Modal>
