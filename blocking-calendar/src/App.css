@@ -45,14 +45,27 @@
 
 
 .navbar{
-  border: 1px solid black;
+  /* border: 1px solid black; */
   padding: 30px;
   display: flex;
   justify-content: space-evenly;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff; /* Set your desired background color */
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  /* box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); */
+  /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 }
 
 .body-box{
+  margin-top: 85px;
   background-color: #f8f8fa ;
   border: 1px solid white;
 }
@@ -77,6 +90,7 @@
   align-items: center;
   justify-content: center;
   color: black;
+  background-color: white;
   font-size: 24px;
   font-weight: bold;
   font-family: "Google Sans Display", Roboto, Arial, sans-serif;;

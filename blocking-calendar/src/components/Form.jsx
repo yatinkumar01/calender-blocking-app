@@ -27,8 +27,27 @@ const Form = () => {
     description: "",
     startDateTime: "",
     endDateTime: "",
+    location:"",
     attendees: [],
   });
+
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   const selectedDateTime = new Date(value).getTime();
+  //   const currentDateTime = new Date().getTime();
+
+  //   if (selectedDateTime < currentDateTime) {
+  //     setFormData({
+  //       ...formData,
+  //       [name]: getCurrentDateTime(),
+  //     });
+  //   } else {
+  //     setFormData({
+  //       ...formData,
+  //       [name]: value,
+  //     });
+  //   }
+  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -57,29 +76,47 @@ const Form = () => {
       });
     }
   };
-
-  const handleCreateEvent = async () => { 
+  const handleCreateEvent = async () => {
     try {
       const startDateTimeISO = new Date(formData.startDateTime).toISOString();
       const endDateTimeISO = new Date(formData.endDateTime).toISOString();
 
-      const response = await axios.post(
-        "http://localhost:8080/schedule_event",
-        {
-          summary: formData.summary,
-          description: formData.description,
-          startDateTime: startDateTimeISO,
-          endDateTime: endDateTimeISO,
-          attendees: formData.attendees,
-        }
-      );
+      const linesArray = formData.attendees.split('\n');
+      const arrayOfObjects = linesArray.map(line => {
+        const [email, content] = line.split(': '); // Split each line into email and content
+        return { email, input: content }; // Create an object with email and input properties
+      });
+
+      const response = await axios.post('http://localhost:8080/schedule_event', {
+        summary: formData.summary,
+        description: formData.description,
+        startDateTime: startDateTimeISO,
+        endDateTime: endDateTimeISO,
+        location: formData.location,
+        attendees: arrayOfObjects,
+      });
+
       console.log(response.data); // Log the response from the backend
       alert("Event created successfully");
     } catch (error) {
-      console.error("Error creating event:", error.message);
+      console.error('Error creating event:', error.message);
       alert("Error creating event");
     }
   };
+
+
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${(now.getMonth() + 1)}`.padStart(2, '0'); // Month is 0-indexed
+    const day = `${now.getDate()}`.padStart(2, '0');
+    const hours = `${now.getHours()}`.padStart(2, '0');
+    const minutes = `${now.getMinutes()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
 
   return (
     <Box>
@@ -89,6 +126,7 @@ const Form = () => {
         boxShadow={"rgba(0, 0, 0, 0.24) 0px 3px 8px;"}
         padding={"50px"}
         bg={"white"}
+        mb={"20px"}
         mt={8}
       >
         <Heading size="lg">Event Form</Heading>
@@ -116,6 +154,7 @@ const Form = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
+                resize='none'
               />
             </FormControl>
           </GridItem>
@@ -145,6 +184,7 @@ const Form = () => {
                 name="endDateTime"
                 min = {getCurrentDateTime()}
                 value={formData.endDateTime}
+                min={formData.startDateTime}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -154,24 +194,23 @@ const Form = () => {
         <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
           <GridItem>
             <FormControl>
-              <FormLabel>Location</FormLabel>
-              <Input
-                focusBorderColor="purple.500"
-                placeholder="Enter location"
-              />
+              <FormLabel>Location or Zoom link</FormLabel>
+              <Input focusBorderColor="purple.500" type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="Enter location" />
             </FormControl>
           </GridItem>
 
           <GridItem>
-            <FormControl>
+            {/* <FormControl>
               <FormLabel>Meeting Link</FormLabel>
-              <Input
-                focusBorderColor="purple.500"
-                placeholder="Enter meeting link"
-              />
-            </FormControl>
+              <Input focusBorderColor="purple.500" placeholder="Enter meeting link" />
+            </FormControl> */}
+            <FormControl>
+          <FormLabel>Attendees</FormLabel>
+          <Textarea focusBorderColor="purple.500" resize='none' placeholder="Enter attendees" type="text" name="attendees" value={formData.attendees} onChange={handleInputChange} />
+        </FormControl>
           </GridItem>
         </Grid>
+
 
         <FormControl mt={4}>
           <FormLabel>Attendees</FormLabel>
@@ -184,7 +223,6 @@ const Form = () => {
             onChange={handleInputChange}
           />
         </FormControl>
-
         <Button
           type="button"
           onClick={handleCreateEvent}
@@ -193,7 +231,7 @@ const Form = () => {
         >
           Create Event
         </Button>
-      </Box>
+        </Box>
     </Box>
   );
 };
