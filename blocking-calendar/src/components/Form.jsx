@@ -10,25 +10,24 @@ import {
   Input,
   Textarea,
   Button,
+  Alert,
+  AlertIcon,
+  Text
 } from "@chakra-ui/react";
 
 const Form = () => {
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (`0${now.getMonth() + 1}`).slice(-2);
-    const day = (`0${now.getDate()}`).slice(-2);
-    const hours = (`0${now.getHours()}`).slice(-2);
-    const minutes = (`0${now.getMinutes()}`).slice(-2);
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
   const [formData, setFormData] = useState({
     summary: "",
-    description: "",
+     description: "",
     startDateTime: "",
     endDateTime: "",
     location:"",
     attendees: [],
+  });
+
+  const [alert, setAlert] = useState({
+    status: null,
+    message: "",
   });
 
   // const handleInputChange = (e) => {
@@ -76,6 +75,8 @@ const Form = () => {
       });
     }
   };
+
+
   const handleCreateEvent = async () => {
     try {
       const startDateTimeISO = new Date(formData.startDateTime).toISOString();
@@ -96,11 +97,14 @@ const Form = () => {
         attendees: arrayOfObjects,
       });
 
-      console.log(response.data); // Log the response from the backend
-      alert("Event created successfully");
+      console.log(response.data);
+      setAlert({ status: "success", message: "Event created successfully" });
+      setTimeout(() => {
+        setAlert({ status: null, message: "" });
+      }, 5000);
     } catch (error) {
-      console.error('Error creating event:', error.message);
-      alert("Error creating event");
+      console.error("Error creating event:", error.message);
+      setAlert({ status: "error", message: "Error creating event" });
     }
   };
 
@@ -117,9 +121,21 @@ const Form = () => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
+  const handleCloseAlert = () => {
+    // Handle close button click
+    setAlert({ status: null, message: "" });
+  };
+
 
   return (
     <Box>
+      {alert.status && (
+        <Alert status={alert.status} mt={20} display={"flex"} justifyContent={"center"} alignItems={"center"} position="fixed" top={0} left={0} right={0} zIndex={9999} onClose={handleCloseAlert} autoCloseDuration={5000}
+         >
+          <AlertIcon />
+          <Box textAlign="center">{alert.message}</Box>
+        </Alert>
+      )}
       <Box
         maxW="2xl"
         mx="auto"
@@ -127,10 +143,10 @@ const Form = () => {
         padding={"50px"}
         bg={"white"}
         mb={"20px"}
-        mt={8}
+        mt={{sm:"8", md:"16"}}
       >
         <Heading size="lg">Event Form</Heading>
-        <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
+        <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4} mt={4}>
           <GridItem>
             <FormControl>
               <FormLabel>Title</FormLabel>
@@ -160,7 +176,7 @@ const Form = () => {
           </GridItem>
         </Grid>
 
-        <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
+        <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4} mt={4}>
           <GridItem>
             <FormControl>
               <FormLabel>Start Time</FormLabel>
@@ -182,7 +198,6 @@ const Form = () => {
                 focusBorderColor="purple.500"
                 type="datetime-local"
                 name="endDateTime"
-                min = {getCurrentDateTime()}
                 value={formData.endDateTime}
                 min={formData.startDateTime}
                 onChange={handleInputChange}
@@ -191,7 +206,7 @@ const Form = () => {
           </GridItem>
         </Grid>
 
-        <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
+        <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4} mt={4}>
           <GridItem>
             <FormControl>
               <FormLabel>Location or Zoom link</FormLabel>
@@ -211,18 +226,8 @@ const Form = () => {
           </GridItem>
         </Grid>
 
+        
 
-        <FormControl mt={4}>
-          <FormLabel>Attendees</FormLabel>
-          <Textarea
-            focusBorderColor="purple.500"
-            placeholder="Enter attendees"
-            type="text"
-            name="attendees"
-            value={formData.attendees}
-            onChange={handleInputChange}
-          />
-        </FormControl>
         <Button
           type="button"
           onClick={handleCreateEvent}
@@ -231,6 +236,7 @@ const Form = () => {
         >
           Create Event
         </Button>
+
         </Box>
     </Box>
   );

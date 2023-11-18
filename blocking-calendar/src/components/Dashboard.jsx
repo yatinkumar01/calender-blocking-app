@@ -19,6 +19,8 @@ import {
   FormLabel,
   Input,
   Textarea,
+  Alert,
+  AlertIcon
 
 } from "@chakra-ui/react";
 
@@ -48,6 +50,11 @@ const Dashboard = () => {
 
   const openEditModal = () => setEditModalIsOpen(true);
   const closeEditModal = () => setEditModalIsOpen(false);
+
+  // const [alert, setAlert] = useState({
+  //   status: null,
+  //   message: "",
+  // });
 
   useEffect(() => {
     // Replace 'rasalaniket00@gmail.com' with the desired user email
@@ -173,10 +180,16 @@ const Dashboard = () => {
       });
 
       console.log(response.data); // Log the response from the backend
-      alert("Event updated successfully");
+      alert("Event updated successfully")
+      closeEditModal();
+      // setAlert({ status: "success", message: "Event updated successfully" });
+      // setTimeout(() => {
+      //   setAlert({ status: null, message: "" });
+      // }, 5000);
     } catch (error) {
       console.error('Error creating event:', error.message);
-      alert("Error updated event");
+      alert("Error updated event")
+      // setAlert({ status: "error", message: "Error updated event" });
     }
   };
 
@@ -190,18 +203,36 @@ const Dashboard = () => {
       .then((response) => {
         console.log("deletedddddd");
         alert(`${event_ID} Deleted successfully`);
+        onClose();
+        // setAlert({ status: "success", message: `$Event ID:-{event_ID} deleted successfully` });
+      // setTimeout(() => {
+      //   setAlert({ status: null, message: "" });
+      // }, 5000);
       })
       .catch((error) => {
         console.log("error indelete");
         alert(`${event_ID} not deleted`);
+        // setAlert({ status: "error", message: `$Event Id:-{event_ID} not deleted` });
       });
+  };
+
+  const handleCloseAlert = () => {
+    // Handle close button click
+    // setAlert({ status: null, message: "" });
   };
 
   return (
     <Box className="dashboard-container">
-      <Box className="grid-container">
+      {/* {alert.status && (
+        <Alert status={alert.status} mt={2} display={"flex"} justifyContent={"center"} alignItems={"center"} position="fixed" top={0} left={0} right={0} zIndex={9999} onClose={handleCloseAlert}
+         >
+          <AlertIcon />
+          <Box textAlign="center">{alert.message}</Box>
+        </Alert>
+      )} */}
+      <Grid className="grid-container" gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg:"repeat(3, 1fr)" }} >
         {events.map((item, index) => (
-          <Box key={item.event_ID} className="grid-item">
+          <GridItem key={item.event_ID} className="grid-item">
             <Box>
               <Heading size="md">{item.summary}</Heading>
               <Box className="linkbox">
@@ -243,7 +274,7 @@ const Dashboard = () => {
                   className="dropdownBtn"
                   onClick={() => handleDropdownToggle(index)}
                 >
-                  {iconStates[index] ? <MdArrowRight /> : <MdArrowDropDown />}
+                  {iconStates[index] ? <MdArrowDropDown /> : <MdArrowRight />}
                 </button>
                 {dropdownStates[index] && (
                   <Dropdown>
@@ -286,7 +317,7 @@ const Dashboard = () => {
                         bg={"white"}
                       >
 
-                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                        <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4}>
                           <GridItem>
                             <FormControl>
                               <FormLabel>Title</FormLabel>
@@ -316,7 +347,7 @@ const Dashboard = () => {
                           </GridItem>
                         </Grid>
 
-                        <Grid templateColumns="repeat(2, 48%)" gap={4}>
+                        <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4}>
                           <GridItem>
                             <FormControl>
                               <FormLabel>Start Time</FormLabel>
@@ -347,7 +378,7 @@ const Dashboard = () => {
                           </GridItem>
                         </Grid>
 
-                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                        <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4}>
                           <GridItem>
                           <FormControl>
                               <FormLabel>Description</FormLabel>
@@ -431,9 +462,9 @@ const Dashboard = () => {
                 </Modal>
               </Box>
             </Box>
-          </Box>
+          </GridItem>
         ))}
-      </Box>
+      </Grid>
     </Box>
   );
 };

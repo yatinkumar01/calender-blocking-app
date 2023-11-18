@@ -2,7 +2,6 @@ import './App.css';
 import React, { useState } from 'react';
 import Form from './components/Form';
 import Dashboard from './components/Dashboard';
-import Logs from './components/Logs';
 import { Box, Button } from '@chakra-ui/react';
 import {PiPlusBold} from 'react-icons/pi'
 import EventScheduler from './components/AddEvent';
@@ -16,8 +15,6 @@ function App() {
     switch (activeComponent) {
       case "form":
         return <Form />;
-      case "log":
-        return <Logs />;
       default:
         return <Dashboard />;
     }
@@ -37,9 +34,6 @@ function App() {
           onClick={() => setActiveComponent("dashboard")}
         >
           Dashboard
-        </Button>
-        <Button colorScheme="purple" onClick={() => setActiveComponent("log")}>
-          Logs
         </Button>
       </Box>
       <Box className="body-box">{renderComponent()}</Box>
