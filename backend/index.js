@@ -27,11 +27,6 @@ app.use(
       secret: process.env.API_KEY,
       resave: false,
       saveUninitialized: true,
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // Set the session expiration time (e.g., 1 day)
-        secure: false, // Set to true for HTTPS only
-        sameSite: 'strict', // Set the SameSite attribute for CSRF protection
-      },
     })
   );
   
@@ -158,7 +153,6 @@ app.get('/oauth2callback', async (req, res) => {
 
 app.post("/schedule_event", async (req, res) => {
   try {
-    console.log(req.body)
     const eventData = req.body;
 
     console.log("Received event data from frontend:", eventData);
@@ -319,3 +313,4 @@ app.listen(PORT, (req, res) => {
   console.log(`Server running on PORT ${PORT}`);
   opn(authUrl); // Open the browser for authentication
 });
+

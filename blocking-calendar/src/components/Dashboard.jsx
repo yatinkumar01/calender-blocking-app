@@ -181,7 +181,7 @@ const Dashboard = () => {
 
       console.log(response.data); // Log the response from the backend
       alert("Event updated successfully")
-      closeEditModal();
+      closeEditModal()
       // setAlert({ status: "success", message: "Event updated successfully" });
       // setTimeout(() => {
       //   setAlert({ status: null, message: "" });

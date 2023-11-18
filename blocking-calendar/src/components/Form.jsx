@@ -14,6 +14,7 @@ import {
   AlertIcon,
   Text
 } from "@chakra-ui/react";
+import { getCurrentDateTime } from "../utils";
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -21,10 +22,9 @@ const Form = () => {
      description: "",
     startDateTime: "",
     endDateTime: "",
-    location:"",
+    location: "",
     attendees: [],
   });
-
   const [alert, setAlert] = useState({
     status: null,
     message: "",
@@ -50,20 +50,26 @@ const Form = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'startDateTime' && new Date(value) > new Date(formData.endDateTime)) {
+    if (
+      name === "startDateTime" &&
+      new Date(value) > new Date(formData.endDateTime)
+    ) {
       setFormData({
         ...formData,
         endDateTime: value,
         [name]: value,
       });
-    } else if (name === 'endDateTime' && new Date(value) < new Date(formData.startDateTime)) {
+    } else if (
+      name === "endDateTime" &&
+      new Date(value) < new Date(formData.startDateTime)
+    ) {
       // Ensure endDateTime is not smaller than startDateTime
       setFormData({
         ...formData,
         startDateTime: value,
         [name]: value,
       });
-    } else if (name === 'startDateTime') {
+    } else if (name === "startDateTime") {
       setFormData({
         ...formData,
         [name]: value,
@@ -76,26 +82,28 @@ const Form = () => {
     }
   };
 
-
   const handleCreateEvent = async () => {
     try {
       const startDateTimeISO = new Date(formData.startDateTime).toISOString();
       const endDateTimeISO = new Date(formData.endDateTime).toISOString();
 
-      const linesArray = formData.attendees.split('\n');
-      const arrayOfObjects = linesArray.map(line => {
-        const [email, content] = line.split(': '); // Split each line into email and content
+      const linesArray = formData.attendees.split("\n");
+      const arrayOfObjects = linesArray.map((line) => {
+        const [email, content] = line.split(": "); // Split each line into email and content
         return { email, input: content }; // Create an object with email and input properties
       });
 
-      const response = await axios.post('http://localhost:8080/schedule_event', {
-        summary: formData.summary,
-        description: formData.description,
-        startDateTime: startDateTimeISO,
-        endDateTime: endDateTimeISO,
-        location: formData.location,
-        attendees: arrayOfObjects,
-      });
+      const response = await axios.post(
+        "http://localhost:8080/schedule_event",
+        {
+          summary: formData.summary,
+          description: formData.description,
+          startDateTime: startDateTimeISO,
+          endDateTime: endDateTimeISO,
+          location: formData.location,
+          attendees: arrayOfObjects,
+        }
+      );
 
       console.log(response.data);
       setAlert({ status: "success", message: "Event created successfully" });
@@ -170,7 +178,7 @@ const Form = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                resize='none'
+                resize="none"
               />
             </FormControl>
           </GridItem>
@@ -199,7 +207,6 @@ const Form = () => {
                 type="datetime-local"
                 name="endDateTime"
                 value={formData.endDateTime}
-                min={formData.startDateTime}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -210,7 +217,14 @@ const Form = () => {
           <GridItem>
             <FormControl>
               <FormLabel>Location or Zoom link</FormLabel>
-              <Input focusBorderColor="purple.500" type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="Enter location" />
+              <Input
+                focusBorderColor="purple.500"
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="Enter location"
+              />
             </FormControl>
           </GridItem>
 
@@ -220,9 +234,17 @@ const Form = () => {
               <Input focusBorderColor="purple.500" placeholder="Enter meeting link" />
             </FormControl> */}
             <FormControl>
-          <FormLabel>Attendees</FormLabel>
-          <Textarea focusBorderColor="purple.500" resize='none' placeholder="Enter attendees" type="text" name="attendees" value={formData.attendees} onChange={handleInputChange} />
-        </FormControl>
+              <FormLabel>Attendees</FormLabel>
+              <Textarea
+                focusBorderColor="purple.500"
+                resize="none"
+                placeholder="Enter attendees"
+                type="text"
+                name="attendees"
+                value={formData.attendees}
+                onChange={handleInputChange}
+              />
+            </FormControl>
           </GridItem>
         </Grid>
 
