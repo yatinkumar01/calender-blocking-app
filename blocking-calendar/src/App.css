@@ -53,7 +53,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: #fff; /* Set your desired background color */
+  background-color: #000000; /* Set your desired background color */
   padding: 20px;
   display: flex;
   justify-content: space-around;
@@ -67,8 +67,14 @@
 
 .body-box{
   margin-top: 85px;
-  background-color: #f8f8fa ;
+  /* background-color: #f8f8fa ; */
+  /* background-color: red; */
   border: 1px solid white;
+}
+
+.form-box{
+  display: flex;
+  /* justify-content: right; */
 }
 
 

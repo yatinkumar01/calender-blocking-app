@@ -106,6 +106,14 @@ const Form = () => {
       );
 
       console.log(response.data);
+      setFormData({
+        summary: "",
+     description: "",
+    startDateTime: "",
+    endDateTime: "",
+    location: "",
+    attendees: [],
+      })
       setAlert({ status: "success", message: "Event created successfully" });
       setTimeout(() => {
         setAlert({ status: null, message: "" });
@@ -152,6 +160,7 @@ const Form = () => {
         bg={"white"}
         mb={"20px"}
         mt={{sm:"8", md:"16"}}
+        
       >
         <Heading size="lg">Event Form</Heading>
         <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4} mt={4}>
@@ -169,18 +178,18 @@ const Form = () => {
           </GridItem>
 
           <GridItem>
-            <FormControl>
-              <FormLabel>Description</FormLabel>
-              <Textarea
+          <FormControl>
+              <FormLabel>Location or Zoom link</FormLabel>
+              <Input
                 focusBorderColor="purple.500"
-                placeholder="Enter description"
                 type="text"
-                name="description"
-                value={formData.description}
+                name="location"
+                value={formData.location}
                 onChange={handleInputChange}
-                resize="none"
+                placeholder="Enter location"
               />
             </FormControl>
+            
           </GridItem>
         </Grid>
 
@@ -215,15 +224,17 @@ const Form = () => {
 
         <Grid gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap={4} mt={4}>
           <GridItem>
+            
             <FormControl>
-              <FormLabel>Location or Zoom link</FormLabel>
-              <Input
+              <FormLabel>Description</FormLabel>
+              <Textarea
                 focusBorderColor="purple.500"
+                placeholder="Enter description"
                 type="text"
-                name="location"
-                value={formData.location}
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Enter location"
+                resize="none"
               />
             </FormControl>
           </GridItem>

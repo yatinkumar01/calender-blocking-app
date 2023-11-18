@@ -1,4 +1,3 @@
-import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import logo from "../google-meet.svg";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -20,13 +19,15 @@ import {
   Input,
   Textarea,
   Alert,
-  AlertIcon
+  AlertIcon,
+  Box, Heading, Text, Button
 
 } from "@chakra-ui/react";
 
 import { MdArrowRight, MdArrowDropDown } from "react-icons/md";
 import Dropdown from "./Dropdown";
 import Form from "./Form";
+import UpdateForm2 from "./UpdateForm2";
 
 const Dashboard = () => {
   const [events, setEvents] = useState([]);
@@ -180,6 +181,16 @@ const Dashboard = () => {
       });
 
       console.log(response.data); // Log the response from the backend
+      events.forEach((element,index) => {
+        if(element.eventId == eventId){
+          element.summary= formData.summary
+          element.description= formData.description
+          element.startDateTime= startDateTimeISO
+          element.endDateTime= endDateTimeISO
+          element.location= formData.location
+          element.attendees= arrayOfObjects
+        }
+      });
       alert("Event updated successfully")
       closeEditModal()
       // setAlert({ status: "success", message: "Event updated successfully" });
@@ -197,11 +208,14 @@ const Dashboard = () => {
     openEditModal();
   };
 
-
+  const [tem,setTem]=useState();
   const handleDeleteEvent = (event_ID) => {
     fetch(`http://localhost:8080/delete-event/${event_ID}`)
       .then((response) => {
+        
         console.log("deletedddddd");
+          setEvents(events.filter((element) => element.eventId !== event_ID))
+        console.log("events",events)
         alert(`${event_ID} Deleted successfully`);
         onClose();
         // setAlert({ status: "success", message: `$Event ID:-{event_ID} deleted successfully` });
@@ -309,7 +323,8 @@ const Dashboard = () => {
                     <ModalHeader>Edit Event</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      <Box
+                      <UpdateForm2 getCurrentDateTime={getCurrentDateTime} eventData={item}/>
+                      {/* <Box
                         maxW="xl"
                         mx="auto"
                         boxShadow={"rgba(0, 0, 0, 0.24) 0px 3px 8px;"}
@@ -411,7 +426,7 @@ const Dashboard = () => {
                             </FormControl>
                           </GridItem>
                         </Grid>
-                      </Box>
+                      </Box> */}
                     </ModalBody>
 
                     <ModalFooter>

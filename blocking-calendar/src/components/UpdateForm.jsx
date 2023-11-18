@@ -15,12 +15,13 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Button,
 } from "@chakra-ui/react";
 
 const UpdateForm = ({
   editModalIsOpen,
   eventData,
-  handleEditSubmission,
+  handleUpdateEvent,
   closeEditModal,
 }) => {
   const [formData, setFormData] = useState({
@@ -32,6 +33,7 @@ const UpdateForm = ({
     attendees:
       eventData && eventData.attendees ? eventData.attendees.join("/n") : [],
   });
+  const finalRef = React.useRef(null);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (
@@ -65,38 +67,7 @@ const UpdateForm = ({
       });
     }
   };
-  const handleEditSubmission = async () => {
-    try {
-      const startDateTimeISO = new Date(formData.startDateTime).toISOString();
-      const endDateTimeISO = new Date(formData.endDateTime).toISOString();
-
-      const linesArray = formData.attendees.split("\n");
-      const arrayOfObjects = linesArray.map((line) => {
-        const [email, content] = line.split(": ");
-        return { email, input: content };
-      });
-
-      const response = await axios.post(
-        "http://localhost:8080/update_event", 
-        {
-          eventId: eventData.eventId, 
-          summary: formData.summary,
-          description: formData.description,
-          startDateTime: startDateTimeISO,
-          endDateTime: endDateTimeISO,
-          location: formData.location,
-          attendees: arrayOfObjects,
-        }
-      );
-
-      console.log(response.data); 
-      alert("Event updated successfully");
-      closeEditModal();
-    } catch (error) {
-      console.error("Error updating event:", error.message);
-      alert("Error updating event");
-    }
-  };
+  
   return (
     <Modal
       finalFocusRef={finalRef}
@@ -215,7 +186,7 @@ const UpdateForm = ({
           </Button>
           <Button
             colorScheme="purple"
-            onClick={handleEditSubmission(item.eventId)}
+            onClick={handleUpdateEvent(eventData.eventId)}
           >
             Save Changes
           </Button>
