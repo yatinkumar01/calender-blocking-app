@@ -1,13 +1,11 @@
-import './App.css';
-import React, { useState } from 'react';
-import Form from './components/Form';
-import Dashboard from './components/Dashboard';
-import Logs from './components/Logs';
-import { Box, Button } from '@chakra-ui/react';
-import {PiPlusBold} from 'react-icons/pi'
-import EventScheduler from './components/AddEvent';
-import EventApp from './components/AddEvent';
-import Dashboard2 from './components/Dashboard2';
+import "./App.css";
+import React, { useState } from "react";
+import Form from "./components/Form";
+import Dashboard from "./components/Dashboard";
+import Logs from "./components/Logs";
+import { Box, Button } from "@chakra-ui/react";
+import { PiPlusBold } from "react-icons/pi";
+import UpdateForm from "./components/UpdateForm";
 
 function App() {
   const [activeComponent, setActiveComponent] = useState("dashboard");
@@ -15,7 +13,7 @@ function App() {
   const renderComponent = () => {
     switch (activeComponent) {
       case "form":
-        return <Form />;
+        return <Form/>;
       case "log":
         return <Logs />;
       default:

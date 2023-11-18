@@ -2,7 +2,7 @@ import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import logo from "../google-meet.svg";
 import React, { useState, useEffect } from "react";
 import { FiArrowRight } from "react-icons/fi";
-import { IoMdArrowDropdown } from "react-icons/io";
+
 import {
   Modal,
   ModalOverlay,
@@ -12,29 +12,15 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Grid,
-  GridItem,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-
 } from "@chakra-ui/react";
 
 import { MdArrowRight, MdArrowDropDown } from "react-icons/md";
 import Dropdown from "./Dropdown";
-import Form from "./Form";
+import UpdateForm from "./UpdateForm";
 
 const Dashboard = () => {
   const [events, setEvents] = useState([]);
-  const [formData, setFormData] = useState({
-    summary: "",
-    description: "",
-    startDateTime: "",
-    endDateTime: "",
-    location:"",
-    attendees: [],
-  });
+
   const [dropdownStates, setDropdownStates] = useState(
     Array(events.length).fill(false)
   );
@@ -51,7 +37,6 @@ const Dashboard = () => {
   useEffect(() => {
     // Replace 'rasalaniket00@gmail.com' with the desired user email
     const userEmail = "rasalaniket00@gmail.com";
-
     // Make a GET request to the backend API to fetch events
     fetch(`http://localhost:8080/list-events/${userEmail}`)
       .then((response) => response.json())
@@ -72,47 +57,6 @@ const Dashboard = () => {
     setDropdownStates(updatedStates);
     setIconStates(updatedIconStates);
   };
-
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'startDateTime' && new Date(value) > new Date(formData.endDateTime)) {
-      setFormData({
-        ...formData,
-        endDateTime: value,
-        [name]: value,
-      });
-    } else if (name === 'endDateTime' && new Date(value) < new Date(formData.startDateTime)) {
-      // Ensure endDateTime is not smaller than startDateTime
-      setFormData({
-        ...formData,
-        startDateTime: value,
-        [name]: value,
-      });
-    } else if (name === 'startDateTime') {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
-  };
-
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = `${(now.getMonth() + 1)}`.padStart(2, '0'); // Month is 0-indexed
-    const day = `${now.getDate()}`.padStart(2, '0');
-    const hours = `${now.getHours()}`.padStart(2, '0');
-    const minutes = `${now.getMinutes()}`.padStart(2, '0');
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
 
   const TimeDisplay = ({ time }) => {
     const parsedDate = new Date(time);
@@ -155,10 +99,12 @@ const Dashboard = () => {
     fetch(`http://localhost:8080/delete-event/${event_ID}`)
       .then((response) => {
         console.log("deletedddddd");
+        const updatedEvents = events.filter((event) => event.eventId !== event_ID);
+        setEvents(updatedEvents);
         alert(`${event_ID} Deleted successfully`);
       })
       .catch((error) => {
-        console.log("error indelete");
+        console.log("error in delete");
         alert(`${event_ID} not deleted`);
       });
   };
@@ -167,7 +113,7 @@ const Dashboard = () => {
     <Box className="dashboard-container">
       <Box className="grid-container">
         {events.map((item, index) => (
-          <Box key={item.event_ID} className="grid-item">
+          <Box key={item.eventId} className="grid-item">
             <Box>
               <Heading size="md">{item.summary}</Heading>
               <Box className="linkbox">
@@ -229,139 +175,16 @@ const Dashboard = () => {
                 <Button
                   className="fontbtn"
                   colorScheme="purple"
-                  onClick={() => handleEditClick(item.event_ID)}
+                  onClick={() => handleEditClick(item.eventId)}
                 >
                   Edit
                 </Button>
-                <Modal
-                  finalFocusRef={finalRef}
-                  isOpen={editModalIsOpen}
-                  onClose={closeEditModal}
-                  size={"xl"}
-                >
-                  <ModalOverlay />
-                  <ModalContent>
-                    <ModalHeader>Edit Event</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                      <Box
-                        maxW="xl"
-                        mx="auto"
-                        boxShadow={"rgba(0, 0, 0, 0.24) 0px 3px 8px;"}
-                        padding={"50px"}
-                        bg={"white"}
-                      >
-
-                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                          <GridItem>
-                            <FormControl>
-                              <FormLabel>Title</FormLabel>
-                              <Input
-                                focusBorderColor="purple.500"
-                                type="text"
-                                name="summary"
-                                value={formData.summary}
-                                onChange={handleInputChange}
-                              />
-                            </FormControl>
-                          </GridItem>
-
-                          <GridItem>
-                          <FormControl>
-                              <FormLabel>Location or Zoom link</FormLabel>
-                              <Input
-                                focusBorderColor="purple.500"
-                                type="text"
-                                name="location"
-                                value={formData.location}
-                                onChange={handleInputChange}
-                                placeholder="Enter location"
-                              />
-                            </FormControl>
-                            
-                          </GridItem>
-                        </Grid>
-
-                        <Grid templateColumns="repeat(2, 48%)" gap={4}>
-                          <GridItem>
-                            <FormControl>
-                              <FormLabel>Start Time</FormLabel>
-                              <Input
-                                
-                                focusBorderColor="purple.500"
-                                type="datetime-local"
-                                name="startDateTime"
-                                min={getCurrentDateTime()}
-                                value={formData.startDateTime}
-                                onChange={handleInputChange}
-                              />
-                            </FormControl>
-                          </GridItem>
-
-                          <GridItem>
-                            <FormControl>
-                              <FormLabel>End Time</FormLabel>
-                              <Input
-                                focusBorderColor="purple.500"
-                                type="datetime-local"
-                                name="endDateTime"
-                                value={formData.endDateTime}
-                                min={formData.startDateTime}
-                                onChange={handleInputChange}
-                              />
-                            </FormControl>
-                          </GridItem>
-                        </Grid>
-
-                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                          <GridItem>
-                          <FormControl>
-                              <FormLabel>Description</FormLabel>
-                              <Textarea
-                                focusBorderColor="purple.500"
-                                placeholder="Enter description"
-                                type="text"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                resize="none"
-                              />
-                            </FormControl>
-                            
-                          </GridItem>
-
-                          <GridItem>
-                            
-                            <FormControl>
-                              <FormLabel>Attendees</FormLabel>
-                              <Textarea
-                                focusBorderColor="purple.500"
-                                resize="none"
-                                placeholder="Enter attendees"
-                                type="text"
-                                name="attendees"
-                                value={formData.attendees}
-                                onChange={handleInputChange}
-                              />
-                            </FormControl>
-                          </GridItem>
-                        </Grid>
-                      </Box>
-                    </ModalBody>
-
-                    <ModalFooter>
-                      <Button variant="ghost" mr={3} onClick={closeEditModal}>
-                        Cancel
-                      </Button>
-                      <Button
-                        colorScheme="purple"
-                        onClick={handleEditSubmission(item.event_ID)}
-                      >
-                        Save Changes
-                      </Button>
-                    </ModalFooter>
-                  </ModalContent>
-                </Modal>
+                <UpdateForm
+                  editModalIsOpen={editModalIsOpen}
+                  eventData={item}
+                  handleEditSubmission={handleEditSubmission}
+                  closeEditModal={closeEditModal}
+                />
                 <Button className="fontbtn" colorScheme="red" onClick={onOpen}>
                   Delete
                 </Button>
