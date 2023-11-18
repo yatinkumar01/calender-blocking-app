@@ -1,6 +1,7 @@
 import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import logo from "../google-meet.svg";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FiArrowRight } from "react-icons/fi";
 
 import {
@@ -90,16 +91,53 @@ const Dashboard = () => {
     );
   };
 
-  const handleEditClick = (eventID) => {
+  const handleUpdateEvent = async (eventId) => {
+    console.log("151", eventId);
+    try {
+      const startDateTimeISO = new Date(formData.startDateTime).toISOString();
+      const endDateTimeISO = new Date(formData.endDateTime).toISOString();
+
+      console.log("155", eventId);
+
+      const linesArray = formData.attendees.split("\n");
+      const arrayOfObjects = linesArray.map((line) => {
+        const [email, content] = line.split(": "); // Split each line into email and content
+        return { email, input: content }; // Create an object with email and input properties
+      });
+
+      console.log("163", formData);
+
+      const response = await axios.post(
+        `http://localhost:8080/update-event/${eventId}`,
+        {
+          summary: formData.summary,
+          description: formData.description,
+          startDateTime: startDateTimeISO,
+          endDateTime: endDateTimeISO,
+          location: formData.location,
+          attendees: arrayOfObjects,
+        }
+      );
+
+      console.log(response.data); // Log the response from the backend
+      alert("Event updated successfully");
+    } catch (error) {
+      console.error("Error creating event:", error.message);
+      alert("Error updated event");
+    }
+  };
+
+  const handleEditClick = (eventId) => {
     openEditModal();
   };
-  const handleEditSubmission = (eventID) => {};
 
   const handleDeleteEvent = (event_ID) => {
     fetch(`http://localhost:8080/delete-event/${event_ID}`)
       .then((response) => {
         console.log("deletedddddd");
-        const updatedEvents = events.filter((event) => event.eventId !== event_ID);
+        const updatedEvents = events.filter(
+          (event) => event.eventId !== event_ID
+        );
         setEvents(updatedEvents);
         alert(`${event_ID} Deleted successfully`);
       })
@@ -179,12 +217,14 @@ const Dashboard = () => {
                 >
                   Edit
                 </Button>
+
                 <UpdateForm
                   editModalIsOpen={editModalIsOpen}
                   eventData={item}
                   handleEditSubmission={handleEditSubmission}
                   closeEditModal={closeEditModal}
                 />
+
                 <Button className="fontbtn" colorScheme="red" onClick={onOpen}>
                   Delete
                 </Button>
