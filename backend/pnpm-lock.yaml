@@ -1180,7 +1180,6 @@ packages:
       unpipe: 1.0.0
     dev: false
 
-<<<<<<< HEAD:pnpm-lock.yaml
   /readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
@@ -1188,8 +1187,6 @@ packages:
       picomatch: 2.3.1
     dev: false
 
-=======
->>>>>>> 07d2824365d19f729b96608f141744a8279a898b:backend/pnpm-lock.yaml
   /requires-port@1.0.0:
     resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
     dev: false
