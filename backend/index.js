@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors'
+import nodemailer from 'nodemailer'
 dotenv.config();
 
 const calendar = google.calendar({
@@ -17,6 +18,7 @@ const app = express();
 
 // here we are saving the token by which we are authenticating again and again in our functions
 var tokenn;
+var userEmail;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -40,10 +42,59 @@ const oAuth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URL
 );
 
+const oauth2 = google.oauth2({
+  auth: oAuth2Client,
+  version: 'v2', // Specify the version
+});
+
 const authUrl = oAuth2Client.generateAuthUrl({
   access_type: 'offline',
-  scope: ['https://www.googleapis.com/auth/calendar'],
+  scope: ['https://www.googleapis.com/auth/calendar',  'https://www.googleapis.com/auth/userinfo.email'],
 });
+
+
+// Function to send email to attendees using OAuth 2.0
+async function sendEmailToAttendees(message,attendees, event) {
+  try {
+    // Create reusable transporter object using the OAuth2 transport
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: userEmail,
+        pass: process.env.app_pass,
+      },
+    });
+
+    // Prepare email text with event details
+    const emailText = `
+      ${message}
+
+      Event Summary: ${event.summary}
+      Description: ${event.description}
+      Start Time: ${event.start.dateTime}
+      End Time: ${event.end.dateTime}
+      meetingLink : ${event.hangoutLink}
+      location: ${event.location}
+      eventId: ${event.id}
+
+      Please check your calendar for more details.
+    `;
+
+    // send mail with defined transport object
+    const info = await transporter.sendMail({
+      from: userEmail,
+      to: attendees.map(attendee => attendee.email).join(','),
+      subject: `${message} `,
+      text: emailText,
+    });
+
+    console.log('Email sent:', info);
+
+  } catch (error) {
+    console.error('Error sending email:', error.message);
+  }
+}
+
 
 
 //function for getting all the events scheduled to a particular email
@@ -53,10 +104,10 @@ async function listEvents(auth, userEmail) {
             auth,
             calendarId: 'primary',
             timeMin: new Date().toISOString(),
-            maxResults: 10,
+            maxResults: 8,
             singleEvents: true,
             orderBy: 'startTime',
-            q: userEmail,
+            attendee: userEmail,
         });
 
         const events = response.data.items;
@@ -95,8 +146,9 @@ async function updateEvent(auth, eventId, updatedEvent) {
         conferenceDataVersion:1,
         resource: updatedEvent,
       });
-  
+      
       console.log('Event updated:', response.data);
+      return response
     } catch (error) {
       console.error('Error updating event:', error.message);
     }
@@ -106,14 +158,22 @@ async function updateEvent(auth, eventId, updatedEvent) {
 // Function to delete an existing event
 async function deleteEvent(auth, eventId) {
     try {
+       // Fetch the event data before deleting
+       const eventResponse = await calendar.events.get({
+        auth,
+        calendarId: 'primary',
+        eventId,
+      });
+
+
       await calendar.events.delete({
         auth,
         calendarId: 'primary',
-        
         eventId,
       });
-  
+      
       console.log('Event deleted successfully:', eventId);
+      return eventResponse
     } catch (error) {
       console.error('Error deleting event:', error.message);
     }
@@ -122,7 +182,7 @@ async function deleteEvent(auth, eventId) {
 
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;
-
+  console.log("abcd")
   try {
     if (!code) {
       throw new Error('Authorization code not found in the URL.');
@@ -138,15 +198,25 @@ app.get('/oauth2callback', async (req, res) => {
     // Log the obtained tokens
     console.log('Obtained tokens:', tokens);
 
+    //console.log(oAuth2Client)
+    // Fetch user's email using the access token
+    const userInfoResponse = await oauth2.userinfo.get();
+    userEmail = userInfoResponse.data.email;
+
+    console.log('User email:', userEmail);
+
+    // Log the user's email
+    console.log('User email:', userEmail);
+
     //
     // Store the tokens in the session and the tokenn variable
     req.session.tokens = tokens;
      tokenn = req.session.tokens;
-
+     //res.send("login successful")
     // Redirect to the main page or any other route you want
     res.redirect('http://localhost:3000/')
   } catch (error) {
-    console.error('Error exchanging code for tokens:', error.message);
+    console.error('Error exchanging code for tokens:', error);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -195,6 +265,7 @@ app.post("/schedule_event", async (req, res) => {
     });
 
     console.log('Event created:', response.data);
+    sendEmailToAttendees(`Invitation scheduled from ${userEmail} to a meeting`,response.data.attendees,response.data)
     res.send({
       msg: "Event created successfully",
     });
@@ -204,7 +275,6 @@ app.post("/schedule_event", async (req, res) => {
   }
 });
 
-
 app.get('/list-events/:email', async (req, res) => {
     try {
         if (!tokenn) {
@@ -213,12 +283,9 @@ app.get('/list-events/:email', async (req, res) => {
 
         oAuth2Client.setCredentials(tokenn);
 
-        const userEmail = req.params.email;
-        if (!userEmail) {
-            throw new Error('Email parameter is missing.');
-        }
-
+        console.log(userEmail)
         const eventDetails = await listEvents(oAuth2Client, userEmail);
+        console.log(eventDetails)
         res.json(eventDetails);
     } catch (error) {
         console.error('Error listing events:', error.message);
@@ -268,8 +335,8 @@ app.post('/update-event/:eventId', async (req, res) => {
       }
       
       // Call the function to update the event
-      await updateEvent(oAuth2Client, eventId, updatedEvent);
-  
+      const response=await updateEvent(oAuth2Client, eventId, updatedEvent);
+      sendEmailToAttendees(`Invitation updated from ${userEmail} to a meeting`,response.data.attendees,response.data)
       res.send(`Event updated successfully with ID: ${eventId}!`);
     } catch (error) {
       console.error('Error updating event:', error.message);
@@ -295,8 +362,9 @@ app.get('/delete-event/:eventId', async (req, res) => {
       }
   
       // Call the function to delete the event
-      await deleteEvent(oAuth2Client, eventId);
+      const response=await deleteEvent(oAuth2Client, eventId);
   
+      sendEmailToAttendees(`Invitation deleted from ${userEmail} `,response.data.attendees,response.data)
       res.send(`Event deleted successfully with ID: ${eventId}!`);
     } catch (error) {
       console.error('Error deleting event:', error.message);
