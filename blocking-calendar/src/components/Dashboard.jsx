@@ -155,39 +155,46 @@ const Dashboard = () => {
     );
   };
 
-  const handleUpdateEvent = async (eventId) => {
+  const handleUpdateEvent = async (eventId,updatedData) => {
     console.log("151", eventId)
+    console.log("Ratikanta")
     try {
-      const startDateTimeISO = new Date(formData.startDateTime).toISOString();
-      const endDateTimeISO = new Date(formData.endDateTime).toISOString();
+      // const startDateTimeISO = new Date(formData.startDateTime).toISOString();
+      // const endDateTimeISO = new Date(formData.endDateTime).toISOString();
+
+      const startDateTimeISO = new Date(updatedData.startDateTime)
+      const endDateTimeISO = new Date(updatedData.endDateTime)
 
       console.log("155", eventId)
-
-      const linesArray = formData.attendees.split('\n');
+      console.log(formData);
+      
+      const linesArray = updatedData.attendees.split('\n');
       const arrayOfObjects = linesArray.map(line => {
         const [email, content] = line.split(': '); // Split each line into email and content
         return { email, input: content }; // Create an object with email and input properties
       });
 
-      console.log("163", formData)
+      console.log("163", updatedData)
 
       const response = await axios.post(`http://localhost:8080/update-event/${eventId}`, {
-        summary: formData.summary,
-        description: formData.description,
+        summary: updatedData.summary,
+        description:updatedData.description,
         startDateTime: startDateTimeISO,
         endDateTime: endDateTimeISO,
-        location: formData.location,
+        location: updatedData.location,
         attendees: arrayOfObjects,
       });
 
       console.log(response.data); // Log the response from the backend
       events.forEach((element,index) => {
         if(element.eventId == eventId){
-          element.summary= formData.summary
-          element.description= formData.description
+          element.summary= updatedData.summary
+          element.description= updatedData.description
           element.startDateTime= startDateTimeISO
           element.endDateTime= endDateTimeISO
-          element.location= formData.location
+          // element.startDateTime= startDateTimeISO
+          // element.endDateTime= endDateTimeISO
+          element.location= updatedData.location
           element.attendees= arrayOfObjects
         }
       });
@@ -277,9 +284,12 @@ const Dashboard = () => {
                 <Text fontSize="sm" fontWeight={"100"} color="gray">
                   <DateDisplay date={item.start} />
                 </Text>
-                <Text fontSize="sm" fontWeight={"100"} color="gray">
+                {/* <Text fontSize="sm" fontWeight={"100"} color="gray">
                   {item.location}
-                </Text>
+                </Text> */}
+              </Box>
+              <Box>
+                {item.location}
               </Box>
               <br />
               <Box className="dropdownBox">
@@ -323,7 +333,17 @@ const Dashboard = () => {
                     <ModalHeader>Edit Event</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      <UpdateForm2 getCurrentDateTime={getCurrentDateTime} eventData={item}/>
+
+
+
+
+                      <UpdateForm2 getCurrentDateTime={getCurrentDateTime} eventData={item} closeEditModal={closeEditModal} handleUpdateEvent={handleUpdateEvent}/>
+                      
+                      
+                      
+                      
+                      
+                      
                       {/* <Box
                         maxW="xl"
                         mx="auto"
@@ -430,7 +450,7 @@ const Dashboard = () => {
                     </ModalBody>
 
                     <ModalFooter>
-                      <Button variant="ghost" mr={3} onClick={closeEditModal}>
+                      {/* <Button variant="ghost" mr={3} onClick={closeEditModal}>
                         Cancel
                       </Button>
                       <Button
@@ -440,7 +460,7 @@ const Dashboard = () => {
                         }}
                       >
                         Save Changes
-                      </Button>
+                      </Button> */}
                     </ModalFooter>
                   </ModalContent>
                 </Modal>

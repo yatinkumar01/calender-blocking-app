@@ -4,13 +4,13 @@ import Form from './components/Form';
 import Dashboard from './components/Dashboard';
 import { Box, Button } from '@chakra-ui/react';
 import {PiPlusBold} from 'react-icons/pi'
-<<<<<<< Updated upstream
-=======
+// <<<<<<< Updated upstream
+// =======
 import EventScheduler from './components/AddEvent';
 import EventApp from './components/AddEvent';
 import backgroundImg from "./formbg.jpg";
 // import Dashboard2 from './components/Dashboard2';
->>>>>>> Stashed changes
+// >>>>>>> Stashed changes
 
 function App() {
   const [activeComponent, setActiveComponent] = useState("dashboard");
