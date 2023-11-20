@@ -242,6 +242,18 @@ const Dashboard = () => {
     // setAlert({ status: null, message: "" });
   };
 
+
+
+
+  const isValidURL = (str) => {
+    try {
+      new URL(str);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   return (
     <Box className="dashboard-container">
       {/* {alert.status && (
@@ -270,6 +282,24 @@ const Dashboard = () => {
                   <Text>{item.meetLink.conferenceId}</Text>
                 </a>
               </Box>
+              
+{/* box for metting place */}
+
+              <Box>
+              {isValidURL(item.location) ? (
+    <a href={item.location} target="_blank" rel="noopener noreferrer">
+      <Button colorScheme="teal" size="sm">
+        Click
+      </Button>
+    </a>
+  ) : (
+    <Text fontSize="sm" fontWeight={"100"} color="gray">
+      {item.location}
+    </Text>
+  )}
+              </Box>
+
+
               <br />
               <Box className="timebox">
                 <Heading size="md">
@@ -288,9 +318,10 @@ const Dashboard = () => {
                   {item.location}
                 </Text> */}
               </Box>
-              <Box>
-                {item.location}
-              </Box>
+
+{/* Place for link */}
+
+              
               <br />
               <Box className="dropdownBox">
                 <Text fontSize="sm"> Attendees:</Text>
