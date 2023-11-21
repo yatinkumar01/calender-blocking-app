@@ -4,7 +4,7 @@ import Form from './components/Form';
 import Dashboard from './components/Dashboard';
 import { Box, Button } from '@chakra-ui/react';
 import {PiPlusBold} from 'react-icons/pi'
-import backgroundImg from "./formbg.jpg";
+// import backgroundImg from "./formbg.jpg";
 
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
           Dashboard
         </Button>
       </Box>
-      <Box className="body-box" backgroundImage={backgroundImg} backgroundSize="cover"
+      <Box className="body-box" backgroundSize="cover"
       backgroundPosition="center"
       backgroundRepeat="no-repeat">{renderComponent()}</Box>
       {/* <EventApp/> */}

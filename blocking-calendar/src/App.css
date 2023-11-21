@@ -53,7 +53,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: #000000; /* Set your desired background color */
+  background-color: white; /* Set your desired background color */
   padding: 20px;
   display: flex;
   justify-content: space-around;
@@ -70,6 +70,7 @@
   /* background-color: #f8f8fa ; */
   /* background-color: red; */
   border: 1px solid white;
+  background-color: #f8f8fa ;
 }
 
 .form-box{
@@ -85,13 +86,15 @@
 }
 
 .grid-container {
-  gap: 106px;
+  gap: 40px;
   margin: 20px;
   z-index: 0;
 }
 
 .grid-item {
-  height: 340px;
+  width: 100%;
+  height: auto;
+  padding: 10%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,9 +104,11 @@
   font-weight: bold;
   font-family: "Google Sans Display", Roboto, Arial, sans-serif;;
   border-radius: 8px;
-  border: 2px solid purple;
+  /* border: 2px solid purple; */
   position: relative;
   z-index: 2;
+  padding-bottom: 50px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
 .timebox{
