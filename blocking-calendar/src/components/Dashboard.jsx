@@ -46,7 +46,7 @@ const Dashboard = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const finalRef = React.useRef(null);
-
+const [selectedEvent,setSelectedEvent] = useState(null)
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
   const openEditModal = () => setEditModalIsOpen(true);
@@ -187,6 +187,7 @@ const Dashboard = () => {
 
       console.log(response.data); // Log the response from the backend
       events.forEach((element,index) => {
+        console.log("element",11,updatedData)
         if(element.eventId == eventId){
           element.summary= updatedData.summary
           element.description= updatedData.description
@@ -198,6 +199,7 @@ const Dashboard = () => {
           element.attendees= arrayOfObjects
         }
       });
+      setEvents([...events])
       alert("Event updated successfully")
       closeEditModal()
       // setAlert({ status: "success", message: "Event updated successfully" });
@@ -211,7 +213,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleEditClick = (eventId) => {
+  const handleEditClick = (event) => { 
+    setSelectedEvent(event)
     openEditModal();
   };
 
@@ -266,7 +269,7 @@ const Dashboard = () => {
       <Grid className="grid-container" gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg:"repeat(3, 1fr)" }} >
         {events.map((item, index) => (
           <GridItem key={item.event_ID} className="grid-item">
-            <Box>
+            <Box w={"90%"}>
               <Heading size="md">{item.summary}</Heading>
               <Box className="linkbox">
                 <img
@@ -288,8 +291,8 @@ const Dashboard = () => {
               <Box>
               {isValidURL(item.location) ? (
     <a href={item.location} target="_blank" rel="noopener noreferrer">
-      <Button colorScheme="teal" size="sm">
-        Click
+      <Button colorScheme="blue" size="sm" p={5}>
+      Join with Zoom link
       </Button>
     </a>
   ) : (
@@ -310,13 +313,18 @@ const Dashboard = () => {
                   <TimeDisplay time={item.end} />
                 </Heading>
               </Box>
-              <Box className="timebox">
+              <Box className="timebox" pb={"1rem"}>
                 <Text fontSize="sm" fontWeight={"100"} color="gray">
                   <DateDisplay date={item.start} />
                 </Text>
                 {/* <Text fontSize="sm" fontWeight={"100"} color="gray">
                   {item.location}
                 </Text> */}
+              </Box>
+              <Box display={"flex"} justifyContent={"start"} maxHeight={{sm:"40px",md:"40px",lg:"40px"}}  pb={"1rem"} pl={0}>
+              <Text fontSize="sm" fontWeight={"600"} color="black" textAlign={"start"}>
+                Description:  {item.description}
+              </Text>
               </Box>
 
 {/* Place for link */}
@@ -349,7 +357,8 @@ const Dashboard = () => {
                 <Button
                   className="fontbtn"
                   colorScheme="purple"
-                  onClick={() => handleEditClick(item.event_ID)}
+                  pl={"40px"} pr={"40px"}
+                  onClick={() => handleEditClick(item)}
                 >
                   Edit
                 </Button>
@@ -368,7 +377,7 @@ const Dashboard = () => {
 
 
 
-                      <UpdateForm2 getCurrentDateTime={getCurrentDateTime} eventData={item} closeEditModal={closeEditModal} handleUpdateEvent={handleUpdateEvent}/>
+                    {selectedEvent && <UpdateForm2 getCurrentDateTime={getCurrentDateTime} eventData={selectedEvent} closeEditModal={closeEditModal} handleUpdateEvent={handleUpdateEvent}/> }
                       
                       
                       
@@ -481,21 +490,10 @@ const Dashboard = () => {
                     </ModalBody>
 
                     <ModalFooter>
-                      {/* <Button variant="ghost" mr={3} onClick={closeEditModal}>
-                        Cancel
-                      </Button>
-                      <Button
-                        colorScheme="purple"
-                        onClick={() => {
-                          handleUpdateEvent(item.eventId);
-                        }}
-                      >
-                        Save Changes
-                      </Button> */}
                     </ModalFooter>
                   </ModalContent>
                 </Modal>
-                <Button className="fontbtn" colorScheme="red" onClick={onOpen}>
+                <Button className="fontbtn" colorScheme="red" pl={"30px"} pr={"30px"} onClick={onOpen}>
                   Delete
                 </Button>
                 <Modal
