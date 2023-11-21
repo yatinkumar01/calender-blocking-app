@@ -9,6 +9,9 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.16",
+    "@types/react-query": "^1.2.9",
     "axios": "^1.6.2",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.4",
@@ -45,5 +48,14 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "@types/axios": "^0.14.0",
+    "@types/moment-timezone": "^0.5.30",
+    "@types/react-datepicker": "^4.19.3",
+    "@types/react-toastify": "^4.1.0",
+    "@types/yup": "^0.32.0",
+    "file-loader": "^6.2.0"
   }
 }

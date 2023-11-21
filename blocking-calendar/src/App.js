@@ -1,11 +1,10 @@
-import './App.css';
-import React, { useState } from 'react';
-import Form from './components/Form';
-import Dashboard from './components/Dashboard';
-import { Box, Button } from '@chakra-ui/react';
-import {PiPlusBold} from 'react-icons/pi'
+import "./App.css";
+import React, { useState } from "react";
+import Form from "./components/Form";
+import Dashboard from "./components/Dashboard";
+import { Box, Button } from "@chakra-ui/react";
+import { PiPlusBold } from "react-icons/pi";
 // import backgroundImg from "./formbg.jpg";
-
 
 function App() {
   const [activeComponent, setActiveComponent] = useState("dashboard");
@@ -20,7 +19,7 @@ function App() {
     }
   };
   return (
-    <Box className="App" >
+    <Box className="App">
       <Box className="navbar">
         <Button
           colorScheme="purple"
@@ -36,9 +35,14 @@ function App() {
           Dashboard
         </Button>
       </Box>
-      <Box className="body-box" backgroundSize="cover"
-      backgroundPosition="center"
-      backgroundRepeat="no-repeat">{renderComponent()}</Box>
+      <Box
+        className="body-box"
+        backgroundSize="cover"
+        backgroundPosition="center"
+        backgroundRepeat="no-repeat"
+      >
+        {renderComponent()}
+      </Box>
       {/* <EventApp/> */}
     </Box>
   );

@@ -13,9 +13,13 @@ import {
   Textarea,
   Button,
   Alert,
-  AlertIcon,Tag, TagLabel,TagCloseButton,VStack, HStack
+  AlertIcon,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
-
 
 const getCurrentDateTime = () => {
   const now = new Date();
@@ -27,8 +31,6 @@ const getCurrentDateTime = () => {
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
-
-
 
 const Form = () => {
   const [alert, setAlert] = useState({
@@ -155,8 +157,6 @@ const Form = () => {
     ));
   };
 
-  
-
   const handleCloseAlert = () => {
     setAlert({ status: null, message: "" });
   };
@@ -175,8 +175,9 @@ const Form = () => {
           left={0}
           right={0}
           zIndex={9999}
-          onClose={handleCloseAlert}
-          autoCloseDuration={5000}
+          // onClose={handleCloseAlert}
+          // onCloseComplete={handleCloseAlert}
+          // autoCloseDuration={5000}
         >
           <AlertIcon />
           <Box textAlign="center">{alert.message}</Box>
@@ -202,8 +203,8 @@ const Form = () => {
               <FormControl isRequired>
                 <FormLabel>Title</FormLabel>
                 <Input
-                  focusBorderColor="purple.500"
-                  type="text"
+                  // //focusBorderColor="purple.500"
+                  //type="text"
                   name="summary"
                   value={formik.values.summary}
                   onChange={formik.handleChange}
@@ -217,8 +218,8 @@ const Form = () => {
               <FormControl isRequired>
                 <FormLabel>Location or Zoom link</FormLabel>
                 <Input
-                  focusBorderColor="purple.500"
-                  type="text"
+                  //focusBorderColor="purple.500"
+                  //type="text"
                   name="location"
                   value={formik.values.location}
                   onChange={formik.handleChange}
@@ -239,7 +240,7 @@ const Form = () => {
               <FormControl isRequired>
                 <FormLabel>Start Time</FormLabel>
                 <Input
-                  focusBorderColor="purple.500"
+                  //focusBorderColor="purple.500"
                   type="datetime-local"
                   name="startDateTime"
                   min={getCurrentDateTime()}
@@ -255,7 +256,7 @@ const Form = () => {
               <FormControl isRequired>
                 <FormLabel>End Time</FormLabel>
                 <Input
-                  focusBorderColor="purple.500"
+                  //focusBorderColor="purple.500"
                   type="datetime-local"
                   name="endDateTime"
                   value={formik.values.endDateTime}
@@ -276,9 +277,9 @@ const Form = () => {
               <FormControl>
                 <FormLabel>Description</FormLabel>
                 <Textarea
-                  focusBorderColor="purple.500"
+                  //focusBorderColor="purple.500"
                   placeholder="Enter description"
-                  type="text"
+                  //type="text"
                   name="description"
                   value={formik.values.description}
                   onChange={formik.handleChange}
@@ -291,32 +292,42 @@ const Form = () => {
             <GridItem>
               <FormControl isRequired>
                 <FormLabel>Attendees</FormLabel>
-                <Box border={"2px solid grey"} focusBorderColor="purple.500" p={1} borderRadius={"8px"}>
-                <Textarea
-                  focusBorderColor="white"
-                  resize="none"
-                  placeholder="Enter attendees"
-                  type="text"
-                  name="attendees"
-                  border={"none"}
-                  value={formik.values.attendees}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  required
-                />
-                
-                <HStack flex={1} flexWrap={"wrap"}>
-                <VStack  w={"100%"} flex={0} justifyContent={"flex-start"} mt={2}>
-                  {renderAttendeeTags()}
-                </VStack>
-                </HStack>
+                <Box
+                  border={"2px solid grey"}
+                  //focusBorderColor="purple.500"
+                  p={1}
+                  borderRadius={"8px"}
+                >
+                  <Textarea
+                    //focusBorderColor="white"
+                    resize="none"
+                    placeholder="Enter attendees"
+                    //type="text"
+                    name="attendees"
+                    border={"none"}
+                    value={formik.values.attendees}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    required
+                  />
+
+                  <HStack flex={1} flexWrap={"wrap"}>
+                    <VStack
+                      w={"100%"}
+                      flex={0}
+                      justifyContent={"flex-start"}
+                      mt={2}
+                    >
+                      {renderAttendeeTags()}
+                    </VStack>
+                  </HStack>
                 </Box>
               </FormControl>
             </GridItem>
           </Grid>
 
           <Button
-            type="submit"
+            //type="submit"
             colorScheme="purple"
             mt={4}
             disabled={!formik.isValid}
