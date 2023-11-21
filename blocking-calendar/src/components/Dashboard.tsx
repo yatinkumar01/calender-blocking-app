@@ -61,7 +61,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // we Replace 'example@gmail.com' with the desired user email in the backend
-    const userEmail = "example@gmail.com";
+    const userEmail = "officialsiddharthbisht@gmail.com";
 
     // Make a GET request to the backend API to fetch events
     fetch(`http://localhost:8080/list-events/${userEmail}`)

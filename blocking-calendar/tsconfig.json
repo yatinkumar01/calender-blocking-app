@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "outDir": "./build",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -9,19 +11,18 @@
     "allowSyntheticDefaultImports": true,
     // "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "jsx": "react",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]
     },
-    "resolveJsonModule": true, // Uncomment this line if you need to import JSON files
+    "resolveJsonModule": true // Uncomment this line if you need to import JSON files
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.js",
+    "src/**/*.jsx",
     "src/**/*.svg" // Include SVG files in the TypeScript project
   ],
   "exclude": ["node_modules"]
