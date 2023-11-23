@@ -67,6 +67,7 @@ const Dashboard = () => {
     fetch(`http://localhost:8080/list-events/${userEmail}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log(userEmail);
         console.log("Events:", data);
         setEvents(data || []); // Ensure that data.items is defined, otherwise use an empty array
       })

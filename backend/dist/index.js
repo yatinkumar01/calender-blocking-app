@@ -239,9 +239,9 @@ app.get("/list-events/:email", async (req, res) => {
             throw new Error("User not authenticated. Please log in first.");
         }
         oAuth2Client.setCredentials(tokenn);
-        console.log(userEmail);
+        console.log("user email for get list events", userEmail);
         const eventDetails = await listEvents(oAuth2Client, userEmail);
-        console.log(eventDetails);
+        console.log("Event details for get  events", eventDetails);
         res.json(eventDetails);
     }
     catch (error) {
