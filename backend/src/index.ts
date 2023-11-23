@@ -363,7 +363,7 @@ app.post("/update-event/:eventId", async (req, res) => {
           requestId: uuid(),
         },
       },
-      attendees: eventData.attendees,
+      attendees: JSON.stringify(eventData.attendees),
     };
     const eventId = req.params.eventId;
     if (!eventId) {
