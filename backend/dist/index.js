@@ -26,7 +26,7 @@ app.use(session({
 }));
 const PORT = process.env.NODE_ENV || 8080;
 //Authentication happens here
-const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL);
+const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
 const oauth2 = google.oauth2({
     auth: oAuth2Client,
     version: "v2", // Specify the version

@@ -44,7 +44,7 @@ const PORT = process.env.NODE_ENV || 8080;
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URL
+  process.env.REDIRECT_URI
 );
 
 const oauth2 = google.oauth2({

@@ -327,7 +327,7 @@ const Form = () => {
           </Grid>
 
           <Button
-            //type="submit"
+            type="submit"
             colorScheme="purple"
             mt={4}
             disabled={!formik.isValid}
