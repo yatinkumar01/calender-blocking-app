@@ -79,17 +79,16 @@ async function sendEmailToAttendees(message, attendees, event) {
 //function for getting all the events scheduled to a particular email
 async function listEvents(auth, userEmail) {
     try {
-        const response = calendar.events.list({
+        const response = await calendar.events.list({
             auth,
             calendarId: "primary",
             timeMin: new Date().toISOString(),
             maxResults: 8,
             singleEvents: true,
             orderBy: "startTime",
-            // attendee: userEmail,
-            q: `attendee:${userEmail}`,
+            // attendee: `${userEmail}`,
         });
-        const events = (await response).data.items;
+        const events = (response).data.items;
         const eventDetails = [];
         events.forEach((event) => {
             const start = event.start.dateTime || event.start.date;
