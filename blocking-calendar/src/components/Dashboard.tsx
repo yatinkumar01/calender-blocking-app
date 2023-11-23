@@ -20,8 +20,10 @@ import {
   Textarea,
   Alert,
   AlertIcon,
-  Box, Heading, Text, Button
-
+  Box,
+  Heading,
+  Text,
+  Button,
 } from "@chakra-ui/react";
 
 import { MdArrowRight, MdArrowDropDown } from "react-icons/md";
@@ -36,7 +38,7 @@ const Dashboard = () => {
     description: "",
     startDateTime: "",
     endDateTime: "",
-    location:"",
+    location: "",
     attendees: [],
   });
   const [dropdownStates, setDropdownStates] = useState(
@@ -46,7 +48,7 @@ const Dashboard = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const finalRef = React.useRef(null);
-const [selectedEvent,setSelectedEvent] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
   const openEditModal = () => setEditModalIsOpen(true);
@@ -59,12 +61,13 @@ const [selectedEvent,setSelectedEvent] = useState(null)
 
   useEffect(() => {
     // we Replace 'example@gmail.com' with the desired user email in the backend
-    const userEmail = "example@gmail.com";
+    const userEmail = "officialsiddharthbisht@gmail.com";
 
     // Make a GET request to the backend API to fetch events
     fetch(`http://localhost:8080/list-events/${userEmail}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log(userEmail);
         console.log("Events:", data);
         setEvents(data || []); // Ensure that data.items is defined, otherwise use an empty array
       })
@@ -82,23 +85,28 @@ const [selectedEvent,setSelectedEvent] = useState(null)
     setIconStates(updatedIconStates);
   };
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'startDateTime' && new Date(value) > new Date(formData.endDateTime)) {
+    if (
+      name === "startDateTime" &&
+      new Date(value) > new Date(formData.endDateTime)
+    ) {
       setFormData({
         ...formData,
         endDateTime: value,
         [name]: value,
       });
-    } else if (name === 'endDateTime' && new Date(value) < new Date(formData.startDateTime)) {
+    } else if (
+      name === "endDateTime" &&
+      new Date(value) < new Date(formData.startDateTime)
+    ) {
       // Ensure endDateTime is not smaller than startDateTime
       setFormData({
         ...formData,
         startDateTime: value,
         [name]: value,
       });
-    } else if (name === 'startDateTime') {
+    } else if (name === "startDateTime") {
       setFormData({
         ...formData,
         [name]: value,
@@ -114,14 +122,13 @@ const [selectedEvent,setSelectedEvent] = useState(null)
   const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
-    const month = `${(now.getMonth() + 1)}`.padStart(2, '0'); // Month is 0-indexed
-    const day = `${now.getDate()}`.padStart(2, '0');
-    const hours = `${now.getHours()}`.padStart(2, '0');
-    const minutes = `${now.getMinutes()}`.padStart(2, '0');
+    const month = `${now.getMonth() + 1}`.padStart(2, "0"); // Month is 0-indexed
+    const day = `${now.getDate()}`.padStart(2, "0");
+    const hours = `${now.getHours()}`.padStart(2, "0");
+    const minutes = `${now.getMinutes()}`.padStart(2, "0");
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
-
 
   const TimeDisplay = ({ time }) => {
     const parsedDate = new Date(time);
@@ -155,83 +162,85 @@ const [selectedEvent,setSelectedEvent] = useState(null)
     );
   };
 
-  const handleUpdateEvent = async (eventId,updatedData) => {
-    console.log("151", eventId)
-    console.log("Ratikanta")
+  const handleUpdateEvent = async (eventId, updatedData) => {
+    console.log("151", eventId);
+    console.log("Ratikanta");
     try {
       // const startDateTimeISO = new Date(formData.startDateTime).toISOString();
       // const endDateTimeISO = new Date(formData.endDateTime).toISOString();
 
-      const startDateTimeISO = new Date(updatedData.startDateTime)
-      const endDateTimeISO = new Date(updatedData.endDateTime)
+      const startDateTimeISO = new Date(updatedData.startDateTime);
+      const endDateTimeISO = new Date(updatedData.endDateTime);
 
-      console.log("155", eventId)
+      console.log("155", eventId);
       console.log(formData);
-      
-      const linesArray = updatedData.attendees.split('\n');
-      const arrayOfObjects = linesArray.map(line => {
-        const [email, content] = line.split(': '); // Split each line into email and content
+
+      const linesArray = updatedData.attendees.split("\n");
+      const arrayOfObjects = linesArray.map((line) => {
+        const [email, content] = line.split(": "); // Split each line into email and content
         return { email, input: content }; // Create an object with email and input properties
       });
 
-      console.log("163", updatedData)
+      console.log("163", updatedData);
 
-      const response = await axios.post(`http://localhost:8080/update-event/${eventId}`, {
-        summary: updatedData.summary,
-        description:updatedData.description,
-        startDateTime: startDateTimeISO,
-        endDateTime: endDateTimeISO,
-        location: updatedData.location,
-        attendees: arrayOfObjects,
-      });
+      const response = await axios.post(
+        `http://localhost:8080/update-event/${eventId}`,
+        {
+          summary: updatedData.summary,
+          description: updatedData.description,
+          startDateTime: startDateTimeISO,
+          endDateTime: endDateTimeISO,
+          location: updatedData.location,
+          attendees: arrayOfObjects,
+        }
+      );
 
       console.log(response.data); // Log the response from the backend
-      events.forEach((element,index) => {
-        console.log("element",11,updatedData)
-        if(element.eventId == eventId){
-          element.summary= updatedData.summary
-          element.description= updatedData.description
-          element.startDateTime= startDateTimeISO
-          element.endDateTime= endDateTimeISO
+      events.forEach((element, index) => {
+        console.log("element", 11, updatedData);
+        if (element.eventId == eventId) {
+          element.summary = updatedData.summary;
+          element.description = updatedData.description;
+          element.startDateTime = startDateTimeISO;
+          element.endDateTime = endDateTimeISO;
           // element.startDateTime= startDateTimeISO
           // element.endDateTime= endDateTimeISO
-          element.location= updatedData.location
-          element.attendees= arrayOfObjects
+          element.location = updatedData.location;
+          element.attendees = arrayOfObjects;
         }
       });
-      setEvents([...events])
-      alert("Event updated successfully")
-      closeEditModal()
+      setEvents([...events]);
+      alert("Event updated successfully");
+      closeEditModal();
       // setAlert({ status: "success", message: "Event updated successfully" });
       // setTimeout(() => {
       //   setAlert({ status: null, message: "" });
       // }, 5000);
     } catch (error) {
-      console.error('Error creating event:', error.message);
-      alert("Error updated event")
+      console.error("Error creating event:", error.message);
+      alert("Error updated event");
       // setAlert({ status: "error", message: "Error updated event" });
     }
   };
 
-  const handleEditClick = (event) => { 
-    setSelectedEvent(event)
+  const handleEditClick = (event) => {
+    setSelectedEvent(event);
     openEditModal();
   };
 
-  const [tem,setTem]=useState();
+  const [tem, setTem] = useState();
   const handleDeleteEvent = (event_ID) => {
     fetch(`http://localhost:8080/delete-event/${event_ID}`)
       .then((response) => {
-        
         console.log("deletedddddd");
-          setEvents(events.filter((element) => element.eventId !== event_ID))
-        console.log("events",events)
+        setEvents(events.filter((element) => element.eventId !== event_ID));
+        console.log("events", events);
         alert(`${event_ID} Deleted successfully`);
         onClose();
         // setAlert({ status: "success", message: `$Event ID:-{event_ID} deleted successfully` });
-      // setTimeout(() => {
-      //   setAlert({ status: null, message: "" });
-      // }, 5000);
+        // setTimeout(() => {
+        //   setAlert({ status: null, message: "" });
+        // }, 5000);
       })
       .catch((error) => {
         console.log("error indelete");
@@ -244,9 +253,6 @@ const [selectedEvent,setSelectedEvent] = useState(null)
     // Handle close button click
     // setAlert({ status: null, message: "" });
   };
-
-
-
 
   const isValidURL = (str) => {
     try {
@@ -266,10 +272,17 @@ const [selectedEvent,setSelectedEvent] = useState(null)
           <Box textAlign="center">{alert.message}</Box>
         </Alert>
       )} */}
-      <Grid className="grid-container" gridTemplateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg:"repeat(3, 1fr)" }} >
+      <Grid
+        className="grid-container"
+        gridTemplateColumns={{
+          sm: "repeat(1, 1fr)",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(3, 1fr)",
+        }}
+      >
         {events.map((item, index) => (
           <GridItem key={item.event_ID} className="grid-item">
-            <Box w={"90%"}>
+            <Box w={"90%"} maxW={"300px"}>
               <Heading size="md">{item.summary}</Heading>
               <Box className="linkbox">
                 <img
@@ -285,23 +298,26 @@ const [selectedEvent,setSelectedEvent] = useState(null)
                   <Text>{item.meetLink.conferenceId}</Text>
                 </a>
               </Box>
-              
-{/* box for metting place */}
+
+              {/* box for metting place */}
 
               <Box>
-              {isValidURL(item.location) ? (
-    <a href={item.location} target="_blank" rel="noopener noreferrer">
-      <Button colorScheme="blue" size="sm" p={5}>
-      Join with Zoom link
-      </Button>
-    </a>
-  ) : (
-    <Text fontSize="sm" fontWeight={"100"} color="gray">
-      {item.location}
-    </Text>
-  )}
+                {isValidURL(item.location) ? (
+                  <a
+                    href={item.location}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button colorScheme="blue" size="sm" p={5}>
+                      Join with Zoom link
+                    </Button>
+                  </a>
+                ) : (
+                  <Text fontSize="sm" fontWeight={"100"} color="gray">
+                    {item.location}
+                  </Text>
+                )}
               </Box>
-
 
               <br />
               <Box className="timebox">
@@ -321,18 +337,34 @@ const [selectedEvent,setSelectedEvent] = useState(null)
                   {item.location}
                 </Text> */}
               </Box>
-              <Box display={"flex"} justifyContent={"start"} maxHeight={{sm:"40px",md:"40px",lg:"40px"}}  pb={"1rem"} pl={0}>
-              <Text fontSize="sm" fontWeight={"600"} color="black" textAlign={"start"}>
-                Description:  {item.description}
-              </Text>
+              <Box
+                display={"flex"}
+                justifyContent={"start"}
+                maxHeight={{ sm: "40px", md: "40px", lg: "40px" }}
+                pb={"1rem"}
+                pl={0}
+                maxW={"320px"}
+              >
+                <Text
+                  fontSize="sm"
+                  fontWeight={"600"}
+                  color="black"
+                  textAlign={"start"}
+                  width={"100%"}
+                  maxH={"200px"}
+                >
+                  Description: {item.description}
+                </Text>
               </Box>
 
-{/* Place for link */}
+              {/* Place for link */}
 
-              
               <br />
               <Box className="dropdownBox">
-                <Text fontSize="sm"> Attendees:</Text>
+                <Text fontSize="sm" mt={6}>
+                  {" "}
+                  Attendees:
+                </Text>
                 <button
                   className="dropdownBtn"
                   onClick={() => handleDropdownToggle(index)}
@@ -357,7 +389,8 @@ const [selectedEvent,setSelectedEvent] = useState(null)
                 <Button
                   className="fontbtn"
                   colorScheme="purple"
-                  pl={"40px"} pr={"40px"}
+                  pl={"40px"}
+                  pr={"40px"}
                   onClick={() => handleEditClick(item)}
                 >
                   Edit
@@ -368,22 +401,23 @@ const [selectedEvent,setSelectedEvent] = useState(null)
                   onClose={closeEditModal}
                   size={"xl"}
                 >
-                  <ModalOverlay />
+                  <ModalOverlay
+                    bg="blackAlpha.300"
+                    // backdropFilter="blur(10px) hue-rotate(90deg)"
+                  />
                   <ModalContent>
                     <ModalHeader>Edit Event</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
+                      {selectedEvent && (
+                        <UpdateForm2
+                          getCurrentDateTime={getCurrentDateTime}
+                          eventData={selectedEvent}
+                          closeEditModal={closeEditModal}
+                          handleUpdateEvent={handleUpdateEvent}
+                        />
+                      )}
 
-
-
-
-                    {selectedEvent && <UpdateForm2 getCurrentDateTime={getCurrentDateTime} eventData={selectedEvent} closeEditModal={closeEditModal} handleUpdateEvent={handleUpdateEvent}/> }
-                      
-                      
-                      
-                      
-                      
-                      
                       {/* <Box
                         maxW="xl"
                         mx="auto"
@@ -489,11 +523,16 @@ const [selectedEvent,setSelectedEvent] = useState(null)
                       </Box> */}
                     </ModalBody>
 
-                    <ModalFooter>
-                    </ModalFooter>
+                    <ModalFooter></ModalFooter>
                   </ModalContent>
                 </Modal>
-                <Button className="fontbtn" colorScheme="red" pl={"30px"} pr={"30px"} onClick={onOpen}>
+                <Button
+                  className="fontbtn"
+                  colorScheme="red"
+                  pl={"30px"}
+                  pr={"30px"}
+                  onClick={onOpen}
+                >
                   Delete
                 </Button>
                 <Modal
